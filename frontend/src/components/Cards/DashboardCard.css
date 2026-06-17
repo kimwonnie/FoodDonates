@@ -1,0 +1,115 @@
+.dashboard-card {
+
+  background: white;
+
+  padding: 25px;
+
+  border-radius: 20px;
+
+  box-shadow:
+    0 4px 12px rgba(
+      0,
+      0,
+      0,
+      .08
+    );
+
+  display: flex;
+
+  flex-direction: column;
+
+  gap: 20px;
+
+  transition: .3s;
+
+}
+
+.dashboard-card:hover {
+
+  transform: translateY(-5px);
+
+}
+
+.card-header {
+
+  display: flex;
+
+  justify-content: space-between;
+
+  align-items: center;
+
+}
+
+.card-header span {
+
+  color: #64748B;
+
+  font-size: 18px;
+
+  font-weight: 600;
+
+}
+
+.card-icon {
+
+  width: 50px;
+  height: 50px;
+
+  display: flex;
+
+  align-items: center;
+  justify-content: center;
+
+  border-radius: 12px;
+
+  background: linear-gradient(
+    135deg,
+    #6C63FF,
+    #3B82F6
+  );
+
+  color: white;
+
+  font-size: 22px;
+
+}
+
+.dashboard-card h2 {
+
+  font-size: 34px;
+
+  color: #0F172A;
+
+}
+
+.stat-card {
+
+  background: white;
+
+  padding: 20px;
+
+  border-radius: 16px;
+
+  box-shadow:
+    0 4px 12px rgba(
+      0,
+      0,
+      0,
+      .08
+    );
+
+}
+
+.stat-card h4 {
+
+  color: #64748B;
+
+  margin-bottom: 10px;
+
+}
+
+.stat-card h2 {
+
+  color: #0F172A;
+
+}
