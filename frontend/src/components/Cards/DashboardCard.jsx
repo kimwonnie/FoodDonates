@@ -3,10 +3,12 @@ import "./DashboardCard.css";
 const DashboardCard = ({
   title,
   value,
-  icon
+  icon,
+  subtitle
 }) => {
 
   return (
+
     <div className="dashboard-card">
 
       <div className="card-header">
@@ -21,8 +23,18 @@ const DashboardCard = ({
 
       <h2>{value}</h2>
 
+      {subtitle && (
+
+        <small className="card-subtitle">
+          {subtitle}
+        </small>
+
+      )}
+
     </div>
+
   );
+
 };
 
 export default DashboardCard;

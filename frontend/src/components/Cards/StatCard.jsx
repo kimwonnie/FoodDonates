@@ -1,7 +1,9 @@
 const StatCard = ({
   title,
   value,
-  color
+  color,
+  icon,
+  description
 }) => {
 
   return (
@@ -13,13 +15,30 @@ const StatCard = ({
       }}
     >
 
+      {icon && (
+
+        <div className="stat-icon">
+          {icon}
+        </div>
+
+      )}
+
       <h4>{title}</h4>
 
       <h2>{value}</h2>
 
+      {description && (
+
+        <small>
+          {description}
+        </small>
+
+      )}
+
     </div>
 
   );
+
 };
 
 export default StatCard;
