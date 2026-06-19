@@ -1,99 +1,147 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
+import { Link } from "react-router-dom";
 
-import Input from "../../components/Forms/Input";
-import Select from "../../components/Forms/Select";
-import FormButtons from "../../components/Forms/FormButtons";
+import DataTable from "../../components/Tables/DataTable";
 
-const CreateUser = () => {
+const ListUsers = () => {
 
-  const [form, setForm] = useState({
-    nome: "",
-    email: "",
-    senha: "",
-    perfil: "",
-    status: "ATIVO"
-  });
+  const [users, setUsers] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState("");
 
-  const handleChange = (e) => {
+  // 🔌 BUSCA NO BACKEND (já pronto para integração)
+  const fetchUsers = async () => {
+    try {
+      setLoading(true);
 
-    setForm({
-      ...form,
-      [e.target.name]: e.target.value
-    });
+      const response = await fetch("http://localhost:3000/users");
 
+      if (!response.ok) {
+        throw new Error("Erro ao buscar usuários");
+      }
+
+      const data = await response.json();
+
+      setUsers(data);
+
+    } catch (err) {
+      console.error(err);
+      setError("Erro ao carregar usuários");
+    } finally {
+      setLoading(false);
+    }
   };
 
-  const handleSubmit = (e) => {
+  useEffect(() => {
+    fetchUsers();
+  }, []);
 
-    e.preventDefault();
-
-    console.log(form);
-
+  const handleView = (user) => {
+    console.log("Visualizar", user);
+    // futuro: modal ou página /users/:id
   };
+
+  const handleEdit = (user) => {
+    console.log("Editar", user);
+    // futuro: navigate(`/users/edit/${user._id}`)
+  };
+
+  const handleDelete = async (user) => {
+    console.log("Excluir", user);
+
+    const confirmDelete = window.confirm(
+      `Deseja realmente excluir o usuário ${user.nome}?`
+    );
+
+    if (!confirmDelete) return;
+
+    try {
+      const response = await fetch(
+        `http://localhost:3000/users/${user._id}`,
+        {
+          method: "DELETE"
+        }
+      );
+
+      if (!response.ok) {
+        throw new Error("Erro ao excluir usuário");
+      }
+
+      // remove do state sem precisar recarregar tudo
+      setUsers((prev) => prev.filter((u) => u._id !== user._id));
+
+    } catch (err) {
+      console.error(err);
+      alert("Erro ao excluir usuário");
+    }
+  };
+
+  if (loading) {
+    return <p>Carregando usuários...</p>;
+  }
 
   return (
-
     <div>
 
-      <h1>Cadastrar Usuário</h1>
+      <div
+        style={{
+          display: "flex",
+          justifyContent: "space-between",
+          alignItems: "center",
+          marginBottom: "20px"
+        }}
+      >
 
-      <form onSubmit={handleSubmit}>
+        <div>
+          <h1>Usuários</h1>
 
-        <Input
-          label="Nome"
-          name="nome"
-          value={form.nome}
-          onChange={handleChange}
-        />
+          <p>
+            Total de Usuários: {" "}
+            {users.length}
+          </p>
 
-        <Input
-          label="Email"
-          type="email"
-          name="email"
-          value={form.email}
-          onChange={handleChange}
-        />
+        </div>
 
-        <Input
-          label="Senha"
-          type="password"
-          name="senha"
-          value={form.senha}
-          onChange={handleChange}
-        />
+        <Link to="/users/create">
+          <button
+            style={{
+              padding: "10px 18px",
+              border: "none",
+              borderRadius: "8px",
+              cursor: "pointer",
+              background: "#6C63FF",
+              color: "#FFF",
+              fontWeight: "600"
+            }}
+          >
+            + Novo Usuário
+          </button>
+        </Link>
 
-        <Select
-          label="Perfil"
-          name="perfil"
-          value={form.perfil}
-          onChange={handleChange}
-          options={[
-            {
-              value: "ADMIN",
-              label: "Administrador"
-            },
-            {
-              value: "ONG",
-              label: "ONG"
-            },
-            {
-              value: "DOADOR",
-              label: "Doador"
-            },
-            {
-              value: "OPERADOR",
-              label: "Operador"
-            }
-          ]}
-        />
+      </div>
 
-        <FormButtons />
+      {error && (
+        <p style={{ color: "red", marginBottom: "10px" }}>
+          {error}
+        </p>
+      )}
 
-      </form>
+      <DataTable
+        columns={[
+          "Nome",
+          "Email",
+          "Perfil",
+          "Telefone",
+          "Status"
+        ]}
+        data={users}
+        onView={handleView}
+        onEdit={handleEdit}
+        onDelete={handleDelete}
+      />
 
     </div>
-
   );
 };
 
-export default CreateUser;
+export default ListUsers;
