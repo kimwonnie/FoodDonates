@@ -1,51 +1,70 @@
+import { useEffect, useState } from "react";
 import DashboardCard from "../../components/Cards/DashboardCard";
 
 const Dashboard = () => {
 
-  const dashboardData = {
+  const [dashboardData, setDashboardData] = useState({
+    foodTypes: 0,
+    stock: 0,
+    expiringFoods: 0,
+    families: 0,
+    deliveries: 0,
+    ngos: 0
+  });
 
-    foodTypes: 15,
-    stock: 4250,
-    expiringFoods: 8,
-    families: 245,
-    deliveries: 987,
-    ngos: 18
+  const [recentActivities, setRecentActivities] = useState([]);
+  const [alerts, setAlerts] = useState([]);
 
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState("");
+
+  const fetchDashboard = async () => {
+
+    try {
+      setLoading(true);
+      setError("");
+
+      // 🔌 backend ready
+      const response = await fetch("http://localhost:3000/dashboard");
+
+      if (!response.ok) {
+        throw new Error("Erro ao carregar dashboard");
+      }
+
+      const data = await response.json();
+
+      setDashboardData(data.metrics || dashboardData);
+      setRecentActivities(data.recentActivities || []);
+      setAlerts(data.alerts || []);
+
+    } catch (err) {
+      console.error(err);
+      setError("Não foi possível carregar o dashboard");
+    } finally {
+      setLoading(false);
+    }
   };
 
-  const recentActivities = [
+  useEffect(() => {
+    fetchDashboard();
+  }, []);
 
-    "Novo lote de Arroz cadastrado",
-    "Entrega realizada para Família Silva",
-    "Alimento próximo da validade identificado",
-    "Nova ONG parceira cadastrada",
-    "Nova doação recebida"
+  if (loading) return <p>Carregando dashboard...</p>;
 
-  ];
-
-  const alerts = [
-
-    "⚠ 8 lotes vencem nos próximos 30 dias",
-    "⚠ Estoque de Feijão abaixo do mínimo",
-    "⚠ 12 famílias aguardando entrega"
-
-  ];
+  if (error) return <p style={{ color: "red" }}>{error}</p>;
 
   return (
-
     <div>
 
       <h1>Dashboard</h1>
 
-      <p>
-        Bem-vindo à Plataforma Solidária
-      </p>
+      <p>Bem-vindo à Plataforma Solidária</p>
 
+      {/* CARDS */}
       <div
         style={{
           display: "grid",
-          gridTemplateColumns:
-            "repeat(auto-fit,minmax(250px,1fr))",
+          gridTemplateColumns: "repeat(auto-fit,minmax(250px,1fr))",
           gap: "20px",
           marginTop: "25px"
         }}
@@ -90,59 +109,41 @@ const Dashboard = () => {
       </div>
 
       {/* ALERTAS */}
-
-      <div
-        style={{
-          marginTop: "40px"
-        }}
-      >
+      <div style={{ marginTop: "40px" }}>
 
         <h2>Alertas</h2>
 
-        <ul>
-
-          {alerts.map((alert, index) => (
-
-            <li key={index}>
-              {alert}
-            </li>
-
-          ))}
-
-        </ul>
+        {alerts.length === 0 ? (
+          <p>Nenhum alerta no momento</p>
+        ) : (
+          <ul>
+            {alerts.map((alert, index) => (
+              <li key={index}>{alert}</li>
+            ))}
+          </ul>
+        )}
 
       </div>
 
       {/* ATIVIDADES */}
-
-      <div
-        style={{
-          marginTop: "40px"
-        }}
-      >
+      <div style={{ marginTop: "40px" }}>
 
         <h2>Atividades Recentes</h2>
 
-        <ul>
-
-          {recentActivities.map(
-            (activity, index) => (
-
-              <li key={index}>
-                {activity}
-              </li>
-
-            )
-          )}
-
-        </ul>
+        {recentActivities.length === 0 ? (
+          <p>Nenhuma atividade recente</p>
+        ) : (
+          <ul>
+            {recentActivities.map((activity, index) => (
+              <li key={index}>{activity}</li>
+            ))}
+          </ul>
+        )}
 
       </div>
 
     </div>
-
   );
-
 };
 
 export default Dashboard;
