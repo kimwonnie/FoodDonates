@@ -1,21 +1,36 @@
+import { useState } from "react";
+
 const SessionSettings = () => {
 
-  return (
+  const [session] = useState({
+    tempoLimite: 30,
+    logoutAutomatico: true,
+    encerrarSessoesSimultaneas: true
+  });
 
+  return (
     <div>
 
       <h1>Configuração de Sessão</h1>
 
-      <p>Tempo limite: 30 minutos</p>
+      <hr />
 
-      <p>Logout automático habilitado</p>
+      <p>
+        <strong>Tempo limite:</strong> {session.tempoLimite} minutos
+      </p>
 
-      <p>Encerrar sessões simultâneas</p>
+      <p>
+        <strong>Logout automático:</strong>{" "}
+        {session.logoutAutomatico ? "Habilitado" : "Desabilitado"}
+      </p>
+
+      <p>
+        <strong>Encerrar sessões simultâneas:</strong>{" "}
+        {session.encerrarSessoesSimultaneas ? "Ativado" : "Desativado"}
+      </p>
 
     </div>
-
   );
-
 };
 
 export default SessionSettings;

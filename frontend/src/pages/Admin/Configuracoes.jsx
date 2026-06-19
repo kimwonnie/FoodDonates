@@ -1,39 +1,40 @@
+import { Link } from "react-router-dom";
+
 const Configuracoes = () => {
 
   return (
-
     <div>
 
       <h1>Configurações Administrativas</h1>
 
-      <ul>
+      <hr />
 
-        <li>
+      <div style={{ display: "grid", gap: "10px" }}>
+
+        <Link to="/admin/perfis">
           Gerenciar Perfis
-        </li>
+        </Link>
 
-        <li>
+        <Link to="/admin/permissoes">
           Gerenciar Permissões
-        </li>
+        </Link>
 
-        <li>
+        <Link to="/admin/logs">
           Configurar Logs
-        </li>
+        </Link>
 
-        <li>
+        <Link to="/admin/seguranca">
           Configurar Segurança
-        </li>
+        </Link>
 
-        <li>
+        <Link to="/admin/backup">
           Configurar Backup
-        </li>
+        </Link>
 
-      </ul>
+      </div>
 
     </div>
-
   );
-
 };
 
 export default Configuracoes;

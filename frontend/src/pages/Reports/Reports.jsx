@@ -3,10 +3,11 @@ import { Link } from "react-router-dom";
 const Reports = () => {
 
   return (
-
     <div>
 
       <h1>Central de Relatórios</h1>
+
+      <hr />
 
       <div className="report-grid">
 
@@ -25,9 +26,7 @@ const Reports = () => {
       </div>
 
     </div>
-
   );
-
 };
 
 export default Reports;

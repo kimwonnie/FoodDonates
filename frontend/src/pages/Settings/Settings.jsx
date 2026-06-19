@@ -3,10 +3,11 @@ import { Link } from "react-router-dom";
 const Settings = () => {
 
   return (
-
     <div>
 
       <h1>Configurações</h1>
+
+      <hr />
 
       <div className="settings-grid">
 
@@ -37,9 +38,7 @@ const Settings = () => {
       </div>
 
     </div>
-
   );
-
 };
 
 export default Settings;

@@ -1,28 +1,73 @@
+import { useEffect, useState } from "react";
+
 const Profile = () => {
 
-  const user = {
+  const [user, setUser] = useState(null);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState("");
 
-    nome: "Williams Santos",
-    email: "williams@email.com",
-    telefone: "(91)99999-9999",
-    perfil: "ADMIN",
-    status: "ATIVO"
+  const fetchProfile = async () => {
+    try {
+      setLoading(true);
+      setError("");
 
+      // 🔐 FUTURO PADRÃO REAL (JWT)
+      // const token = localStorage.getItem("token");
+
+      const response = await fetch("http://localhost:3000/profile", {
+        method: "GET",
+        headers: {
+          "Content-Type": "application/json",
+          // Authorization: `Bearer ${token}`
+        }
+      });
+
+      if (!response.ok) {
+        throw new Error("Erro ao buscar perfil");
+      }
+
+      const data = await response.json();
+
+      setUser(data);
+
+    } catch (err) {
+      console.error(err);
+      setError("Não foi possível carregar o perfil do usuário");
+    } finally {
+      setLoading(false);
+    }
   };
 
-  return (
+  useEffect(() => {
+    fetchProfile();
+  }, []);
 
+  if (loading) {
+    return <p>Carregando perfil...</p>;
+  }
+
+  if (error) {
+    return <p style={{ color: "red" }}>{error}</p>;
+  }
+
+  if (!user) {
+    return <p>Perfil não encontrado</p>;
+  }
+
+  return (
     <div>
 
       <h1>Meu Perfil</h1>
+
+      <hr />
 
       <div className="profile-card">
 
         <div className="profile-avatar">
 
           <img
-            src="/avatar.png"
-            alt="Avatar"
+            src={user.avatar || "/avatar.png"}
+            alt="Avatar do usuário"
             width="120"
           />
 
@@ -31,33 +76,23 @@ const Profile = () => {
         <div>
 
           <p>
-            <strong>Nome:</strong>
-            {" "}
-            {user.nome}
+            <strong>Nome:</strong> {user.nome}
           </p>
 
           <p>
-            <strong>Email:</strong>
-            {" "}
-            {user.email}
+            <strong>Email:</strong> {user.email}
           </p>
 
           <p>
-            <strong>Telefone:</strong>
-            {" "}
-            {user.telefone}
+            <strong>Telefone:</strong> {user.telefone || "Não informado"}
           </p>
 
           <p>
-            <strong>Perfil:</strong>
-            {" "}
-            {user.perfil}
+            <strong>Perfil:</strong> {user.perfil}
           </p>
 
           <p>
-            <strong>Status:</strong>
-            {" "}
-            {user.status}
+            <strong>Status:</strong> {user.status}
           </p>
 
         </div>
@@ -65,9 +100,7 @@ const Profile = () => {
       </div>
 
     </div>
-
   );
-
 };
 
 export default Profile;

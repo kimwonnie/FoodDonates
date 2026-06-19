@@ -1,51 +1,71 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 
 const DonationReport = () => {
 
-  const [data] = useState({
+  const [report, setReport] = useState(null);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState("");
 
-    totalDoacoes: 320,
-    totalKg: 8500,
-    alimentos: [
+  const fetchReport = async () => {
+    try {
+      setLoading(true);
 
-      {
-        nome: "Arroz",
-        quantidade: 3000
-      },
+      // 🔌 pronto para backend
+      const response = await fetch("http://localhost:3000/reports/donations");
 
-      {
-        nome: "Feijão",
-        quantidade: 2000
-      },
-
-      {
-        nome: "Macarrão",
-        quantidade: 1500
+      if (!response.ok) {
+        throw new Error("Erro ao buscar relatório de doações");
       }
 
-    ]
+      const data = await response.json();
 
-  });
+      setReport(data);
+
+    } catch (err) {
+      console.error(err);
+      setError("Erro ao carregar relatório de doações");
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    fetchReport();
+  }, []);
+
+  if (loading) return <p>Carregando relatório...</p>;
+
+  if (error) return <p style={{ color: "red" }}>{error}</p>;
+
+  if (!report) return <p>Nenhum dado encontrado</p>;
 
   return (
-
     <div>
 
       <h1>Relatório de Doações</h1>
 
+      <hr />
+
       <h3>
-        Total de Doações:
-        {" "}
-        {data.totalDoacoes}
+        Total de Doações: {" "}
+        {report.totalDoacoes}
       </h3>
 
       <h3>
-        Total Distribuído:
-        {" "}
-        {data.totalKg} Kg
+        Total Distribuído: {" "}
+        {report.totalKg} Kg
       </h3>
 
-      <table>
+      <hr />
+
+      <h2>Alimentos Distribuídos</h2>
+
+      <table
+        style={{
+          width: "100%",
+          borderCollapse: "collapse"
+        }}
+      >
 
         <thead>
 
@@ -58,7 +78,7 @@ const DonationReport = () => {
 
         <tbody>
 
-          {data.alimentos.map((item, index) => (
+          {report.alimentos.map((item, index) => (
 
             <tr key={index}>
               <td>{item.nome}</td>
@@ -72,9 +92,7 @@ const DonationReport = () => {
       </table>
 
     </div>
-
   );
-
 };
 
 export default DonationReport;

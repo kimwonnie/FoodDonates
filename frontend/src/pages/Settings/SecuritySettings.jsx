@@ -2,36 +2,47 @@ import { useState } from "react";
 
 const SecuritySettings = () => {
 
-  const [security, setSecurity] = useState({
-
+  const [security] = useState({
     tamanhoMinimoSenha: 8,
     exigirMaiuscula: true,
     exigirNumero: true,
     exigirEspecial: true,
     autenticacaoDoisFatores: false
-
   });
 
   return (
-
     <div>
 
       <h1>Configurações de Segurança</h1>
 
-      <p>Senha mínima: {security.tamanhoMinimoSenha}</p>
+      <hr />
 
-      <p>Exigir maiúscula: Sim</p>
+      <p>
+        <strong>Senha mínima:</strong> {security.tamanhoMinimoSenha}
+      </p>
 
-      <p>Exigir número: Sim</p>
+      <p>
+        <strong>Exigir maiúscula:</strong>{" "}
+        {security.exigirMaiuscula ? "Sim" : "Não"}
+      </p>
 
-      <p>Exigir caractere especial: Sim</p>
+      <p>
+        <strong>Exigir número:</strong>{" "}
+        {security.exigirNumero ? "Sim" : "Não"}
+      </p>
 
-      <p>2FA: Desativado</p>
+      <p>
+        <strong>Exigir caractere especial:</strong>{" "}
+        {security.exigirEspecial ? "Sim" : "Não"}
+      </p>
+
+      <p>
+        <strong>Autenticação em dois fatores:</strong>{" "}
+        {security.autenticacaoDoisFatores ? "Ativado" : "Desativado"}
+      </p>
 
     </div>
-
   );
-
 };
 
 export default SecuritySettings;
