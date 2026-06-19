@@ -1,13 +1,31 @@
+import { useState, useEffect } from "react";
+
 const FoodTypeDetails = () => {
 
-  const food = {
+  const [food, setFood] = useState(null);
 
-    nome: "Arroz",
-    unidadeMedida: "kg",
-    validadeDias: 365,
-    status: "ATIVO"
+  useEffect(() => {
 
-  };
+    // Futuramente: buscar do backend
+    const fetchFood = async () => {
+
+      const mockFood = {
+        nome: "Arroz",
+        unidadeMedida: "kg",
+        validadeDias: 365,
+        status: "ATIVO"
+      };
+
+      setFood(mockFood);
+    };
+
+    fetchFood();
+
+  }, []);
+
+  if (!food) {
+    return <p>Carregando detalhes do alimento...</p>;
+  }
 
   return (
 
