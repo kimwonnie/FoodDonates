@@ -1,12 +1,25 @@
 import app from "./app.js";
-
 import connectDB from "./config/database.js";
 import env from "./config/env.js";
 
-connectDB();
+// ===============================
+// Conexão com banco
+// ===============================
+connectDB()
+  .then(() => {
+    console.log("📦 MongoDB conectado com sucesso");
+  })
+  .catch((err) => {
+    console.error("❌ Erro ao conectar no MongoDB:", err.message);
+    process.exit(1);
+  });
 
-app.listen(env.PORT, () => {
-  console.log(
-    `🚀 Servidor rodando na porta ${env.PORT}`
-  );
+// ===============================
+// Start do servidor
+// ===============================
+const PORT = env.PORT || 3000;
+
+app.listen(PORT, () => {
+  console.log(`🚀 Servidor rodando na porta ${PORT}`);
+  console.log(`📡 Acesse: http://localhost:${PORT}`);
 });
