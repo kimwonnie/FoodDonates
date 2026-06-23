@@ -4,15 +4,7 @@ const AuthLayout = () => {
 
   return (
 
-    <div
-      style={{
-        minHeight: "100vh",
-        display: "flex",
-        justifyContent: "center",
-        alignItems: "center",
-        background: "#F5F7FA"
-      }}
-    >
+    <div className="auth-layout">
 
       <Outlet />
 

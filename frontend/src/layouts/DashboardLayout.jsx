@@ -8,35 +8,16 @@ const DashboardLayout = () => {
 
   return (
 
-    <div
-      style={{
-        display: "flex",
-        minHeight: "100vh"
-      }}
-    >
+    <div className="layout-container">
 
       <Sidebar />
 
-      <div
-        style={{
-          flex: 1,
-          display: "flex",
-          flexDirection: "column"
-        }}
-      >
+      <div className="layout-content">
 
         <Header />
 
-        <main
-          style={{
-            flex: 1,
-            padding: "25px",
-            background: "#F5F7FA"
-          }}
-        >
-
+        <main className="layout-main">
           <Outlet />
-
         </main>
 
         <Footer />

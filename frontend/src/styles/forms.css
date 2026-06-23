@@ -1,0 +1,51 @@
+.form-group {
+  display: flex;
+  flex-direction: column;
+  margin-bottom: 20px;
+}
+
+.form-group label {
+  margin-bottom: 8px;
+  font-weight: 600;
+  color: #334155;
+}
+
+.form-group input,
+.form-group select,
+.form-group textarea {
+  padding: 12px;
+  border: 1px solid #CBD5E1;
+  border-radius: 10px;
+  outline: none;
+  font-size: 14px;
+  background: white;
+}
+
+.form-group input:focus,
+.form-group select:focus,
+.form-group textarea:focus {
+  border-color: #6C63FF;
+}
+
+.form-buttons {
+  display: flex;
+  gap: 15px;
+  justify-content: flex-end;
+  margin-top: 20px;
+}
+
+.btn-save {
+  background: #6C63FF;
+  color: white;
+  border: none;
+  padding: 12px 20px;
+  border-radius: 10px;
+}
+
+.btn-cancel {
+  background: #EF4444;
+  color: white;
+  border: none;
+  padding: 12px 20px;
+  border-radius: 10px;
+}

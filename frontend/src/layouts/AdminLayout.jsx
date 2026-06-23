@@ -8,35 +8,16 @@ const AdminLayout = () => {
 
   return (
 
-    <div
-      style={{
-        display: "flex",
-        minHeight: "100vh"
-      }}
-    >
+    <div className="layout-container">
 
       <Sidebar />
 
-      <div
-        style={{
-          flex: 1,
-          display: "flex",
-          flexDirection: "column"
-        }}
-      >
+      <div className="layout-content">
 
         <Header />
 
-        <main
-          style={{
-            flex: 1,
-            padding: "25px",
-            background: "#EEF2FF"
-          }}
-        >
-
+        <main className="layout-main">
           <Outlet />
-
         </main>
 
         <Footer />

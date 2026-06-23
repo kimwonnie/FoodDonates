@@ -1,0 +1,26 @@
+.layout-container {
+  display: flex;
+  min-height: 100vh;
+  background: #F5F7FA;
+}
+
+.layout-content {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+}
+
+.layout-main {
+  flex: 1;
+  padding: 25px;
+  background: #F5F7FA;
+}
+
+/* AUTH */
+.auth-layout {
+  min-height: 100vh;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  background: #F5F7FA;
+}
