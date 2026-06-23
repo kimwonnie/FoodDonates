@@ -7,178 +7,324 @@ import FormButtons from "../../components/Forms/FormButtons";
 
 const EditUser = () => {
 
-  const { id } = useParams();
+const { id } = useParams();
 
-  const initialState = {
-    nome: "",
-    email: "",
-    perfil: "",
-    status: "ATIVO"
-  };
+const initialState = {
 
-  const [form, setForm] = useState(initialState);
-  const [loading, setLoading] = useState(false);
-  const [error, setError] = useState("");
 
-  // 🔌 Buscar usuário pelo ID
-  const fetchUser = async () => {
-    try {
-      setLoading(true);
+nome: "",
 
-      const response = await fetch(`http://localhost:3000/users/${id}`);
+email: "",
 
-      if (!response.ok) {
-        throw new Error("Erro ao buscar usuário");
-      }
+telefone: "",
 
-      const data = await response.json();
+perfil: "DOADOR",
 
-      setForm({
-        nome: data.nome || "",
-        email: data.email || "",
-        perfil: data.perfil || "",
-        status: data.status || "ATIVO"
-      });
+status: "ATIVO"
 
-    } catch (err) {
-      console.error(err);
-      setError("Erro ao carregar usuário");
-    } finally {
-      setLoading(false);
-    }
-  };
 
-  useEffect(() => {
-    fetchUser();
-  }, [id]);
+};
 
-  const handleChange = (e) => {
-    const { name, value } = e.target;
+const [form, setForm] = useState(initialState);
 
-    setForm((prev) => ({
-      ...prev,
-      [name]: value
-    }));
-  };
+const [loading, setLoading] = useState(false);
 
-  const validateForm = () => {
-    if (!form.nome.trim()) return "Nome é obrigatório";
-    if (!form.email.trim()) return "Email é obrigatório";
-    if (!form.perfil) return "Perfil é obrigatório";
+const [error, setError] = useState("");
 
-    return null;
-  };
+const fetchUser = async () => {
 
-  const handleSubmit = async (e) => {
-    e.preventDefault();
 
-    setError("");
+try {
 
-    const validationError = validateForm();
-    if (validationError) {
-      setError(validationError);
-      return;
-    }
+  setLoading(true);
 
-    const payload = {
-      nome: form.nome.trim(),
-      email: form.email.trim().toLowerCase(),
-      perfil: form.perfil,
-      status: form.status
-    };
+  const response = await fetch(
+    `http://localhost:3000/users/${id}`
+  );
 
-    try {
-      setLoading(true);
+  if (!response.ok) {
 
-      const response = await fetch(
-        `http://localhost:3000/users/${id}`,
-        {
-          method: "PUT",
-          headers: {
-            "Content-Type": "application/json"
-          },
-          body: JSON.stringify(payload)
-        }
-      );
+    throw new Error(
+      "Erro ao buscar usuário"
+    );
 
-      if (!response.ok) {
-        throw new Error("Erro ao atualizar usuário");
-      }
-
-      const data = await response.json();
-
-      console.log("Usuário atualizado:", data);
-
-    } catch (err) {
-      console.error(err);
-      setError("Erro ao atualizar usuário");
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  if (loading && !form.nome) {
-    return <p>Carregando usuário...</p>;
   }
 
-  return (
-    <div>
+  const data = await response.json();
 
-      <h1>Editar Usuário</h1>
+  setForm({
 
-      <form onSubmit={handleSubmit}>
+    nome: data.nome || "",
 
-        <Input
-          label="Nome"
-          name="nome"
-          value={form.nome}
-          onChange={handleChange}
-        />
+    email: data.email || "",
 
-        <Input
-          label="Email"
-          type="email"
-          name="email"
-          value={form.email}
-          onChange={handleChange}
-        />
+    telefone: data.telefone || "",
 
-        <Select
-          label="Perfil"
-          name="perfil"
-          value={form.perfil}
-          onChange={handleChange}
-          options={[
-            { value: "ADMIN", label: "Administrador" },
-            { value: "ONG", label: "ONG" },
-            { value: "DOADOR", label: "Doador" },
-            { value: "OPERADOR", label: "Operador" }
-          ]}
-        />
+    perfil: data.perfil || "DOADOR",
 
-        <Select
-          label="Status"
-          name="status"
-          value={form.status}
-          onChange={handleChange}
-          options={[
-            { value: "ATIVO", label: "Ativo" },
-            { value: "INATIVO", label: "Inativo" }
-          ]}
-        />
+    status: data.status || "ATIVO"
 
-        {error && (
-          <p style={{ color: "red", marginTop: "10px" }}>
-            {error}
-          </p>
-        )}
+  });
 
-        <FormButtons submitText="Atualizar" />
+} catch (err) {
 
-      </form>
+  console.error(err);
 
-    </div>
+  setError(
+    "Erro ao carregar usuário"
   );
+
+} finally {
+
+  setLoading(false);
+
+}
+
+
+};
+
+useEffect(() => {
+
+
+fetchUser();
+
+
+}, [id]);
+
+const handleChange = (e) => {
+
+
+const { name, value } = e.target;
+
+setForm((prev) => ({
+  ...prev,
+  [name]: value
+}));
+
+
+};
+
+const validateForm = () => {
+
+
+if (!form.nome.trim()) {
+
+  return "Nome é obrigatório";
+
+}
+
+if (!form.email.trim()) {
+
+  return "Email é obrigatório";
+
+}
+
+if (!form.perfil) {
+
+  return "Perfil é obrigatório";
+
+}
+
+return null;
+
+};
+
+const handleSubmit = async (e) => {
+
+
+e.preventDefault();
+
+setError("");
+
+const validationError =
+  validateForm();
+
+if (validationError) {
+
+  setError(validationError);
+
+  return;
+
+}
+
+const payload = {
+
+  nome: form.nome.trim(),
+
+  email: form.email
+    .trim()
+    .toLowerCase(),
+
+  telefone: form.telefone,
+
+  perfil: form.perfil,
+
+  status: form.status
+
+};
+
+try {
+
+  setLoading(true);
+
+  const response = await fetch(
+    `http://localhost:3000/users/${id}`,
+    {
+      method: "PUT",
+      headers: {
+        "Content-Type":
+          "application/json"
+      },
+      body: JSON.stringify(payload)
+    }
+  );
+
+  if (!response.ok) {
+
+    throw new Error(
+      "Erro ao atualizar usuário"
+    );
+
+  }
+
+  const data =
+    await response.json();
+
+  console.log(
+    "Usuário atualizado:",
+    data
+  );
+
+  alert(
+    "Usuário atualizado com sucesso!"
+  );
+
+} catch (err) {
+
+  console.error(err);
+
+  setError(
+    "Erro ao atualizar usuário"
+  );
+
+} finally {
+
+  setLoading(false);
+
+}
+
+
+};
+
+if (loading && !form.nome) {
+
+
+return (
+  <p>
+    Carregando usuário...
+  </p>
+);
+
+
+}
+
+return (
+
+
+<div>
+
+  <h1>Editar Usuário</h1>
+
+  <form onSubmit={handleSubmit}>
+
+    <Input
+      label="Nome"
+      name="nome"
+      value={form.nome}
+      onChange={handleChange}
+    />
+
+    <Input
+      label="Email"
+      type="email"
+      name="email"
+      value={form.email}
+      onChange={handleChange}
+    />
+
+    <Input
+      label="Telefone"
+      name="telefone"
+      value={form.telefone}
+      onChange={handleChange}
+    />
+
+    <Select
+      label="Perfil"
+      name="perfil"
+      value={form.perfil}
+      onChange={handleChange}
+      options={[
+        {
+          value: "ADMIN",
+          label: "Administrador"
+        },
+        {
+          value: "GESTOR_ONG",
+          label: "Gestor de ONG"
+        },
+        {
+          value: "VOLUNTARIO",
+          label: "Voluntário"
+        },
+        {
+          value: "DOADOR",
+          label: "Doador"
+        }
+      ]}
+    />
+
+    <Select
+      label="Status"
+      name="status"
+      value={form.status}
+      onChange={handleChange}
+      options={[
+        {
+          value: "ATIVO",
+          label: "Ativo"
+        },
+        {
+          value: "INATIVO",
+          label: "Inativo"
+        }
+      ]}
+    />
+
+    {error && (
+
+      <p
+        style={{
+          color: "red",
+          marginTop: "10px"
+        }}
+      >
+        {error}
+      </p>
+
+    )}
+
+    <FormButtons
+      submitText="Atualizar Usuário"
+    />
+
+  </form>
+
+</div>
+
+
+);
+
 };
 
 export default EditUser;

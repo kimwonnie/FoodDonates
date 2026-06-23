@@ -2,31 +2,40 @@ import { Link } from "react-router-dom";
 
 const Reports = () => {
 
-  return (
-    <div>
+return (
 
-      <h1>Central de Relatórios</h1>
 
-      <hr />
+<div>
 
-      <div className="report-grid">
+  <h1>Central de Relatórios</h1>
 
-        <Link to="/reports/donations">
-          Relatório de Doações
-        </Link>
+  <hr />
 
-        <Link to="/reports/deliveries">
-          Relatório de Entregas
-        </Link>
+  <div className="report-grid">
 
-        <Link to="/reports/families">
-          Relatório de Famílias
-        </Link>
+    <Link to="/reports/donations">
+      Relatório de Doações
+    </Link>
 
-      </div>
+    <Link to="/reports/deliveries">
+      Relatório de Entregas
+    </Link>
 
-    </div>
-  );
+    <Link to="/reports/families">
+      Relatório de Famílias
+    </Link>
+
+    <Link to="/reports/stock">
+      Relatório de Estoque
+    </Link>
+
+  </div>
+
+</div>
+
+
+);
+
 };
 
 export default Reports;

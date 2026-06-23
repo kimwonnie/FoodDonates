@@ -1,147 +1,166 @@
-import { useEffect, useState } from "react";
-import { Link } from "react-router-dom";
+import { useState } from "react";
 
-import DataTable from "../../components/Tables/DataTable";
+import Input from "../../components/Forms/Input";
+import Select from "../../components/Forms/Select";
+import FormButtons from "../../components/Forms/FormButtons";
 
-const ListUsers = () => {
+const CreateUser = () => {
 
-  const [users, setUsers] = useState([]);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState("");
+const [form, setForm] = useState({
 
-  // 🔌 BUSCA NO BACKEND (já pronto para integração)
-  const fetchUsers = async () => {
-    try {
-      setLoading(true);
 
-      const response = await fetch("http://localhost:3000/users");
+nome: "",
 
-      if (!response.ok) {
-        throw new Error("Erro ao buscar usuários");
-      }
+email: "",
 
-      const data = await response.json();
+telefone: "",
 
-      setUsers(data);
+senha: "",
 
-    } catch (err) {
-      console.error(err);
-      setError("Erro ao carregar usuários");
-    } finally {
-      setLoading(false);
-    }
-  };
+confirmarSenha: "",
 
-  useEffect(() => {
-    fetchUsers();
-  }, []);
+perfil: "DOADOR",
 
-  const handleView = (user) => {
-    console.log("Visualizar", user);
-    // futuro: modal ou página /users/:id
-  };
+status: "ATIVO"
 
-  const handleEdit = (user) => {
-    console.log("Editar", user);
-    // futuro: navigate(`/users/edit/${user._id}`)
-  };
 
-  const handleDelete = async (user) => {
-    console.log("Excluir", user);
+});
 
-    const confirmDelete = window.confirm(
-      `Deseja realmente excluir o usuário ${user.nome}?`
-    );
+const handleChange = (e) => {
 
-    if (!confirmDelete) return;
 
-    try {
-      const response = await fetch(
-        `http://localhost:3000/users/${user._id}`,
-        {
-          method: "DELETE"
-        }
-      );
+setForm({
+  ...form,
+  [e.target.name]: e.target.value
+});
 
-      if (!response.ok) {
-        throw new Error("Erro ao excluir usuário");
-      }
 
-      // remove do state sem precisar recarregar tudo
-      setUsers((prev) => prev.filter((u) => u._id !== user._id));
-
-    } catch (err) {
-      console.error(err);
-      alert("Erro ao excluir usuário");
-    }
-  };
-
-  if (loading) {
-    return <p>Carregando usuários...</p>;
-  }
-
-  return (
-    <div>
-
-      <div
-        style={{
-          display: "flex",
-          justifyContent: "space-between",
-          alignItems: "center",
-          marginBottom: "20px"
-        }}
-      >
-
-        <div>
-          <h1>Usuários</h1>
-
-          <p>
-            Total de Usuários: {" "}
-            {users.length}
-          </p>
-
-        </div>
-
-        <Link to="/users/create">
-          <button
-            style={{
-              padding: "10px 18px",
-              border: "none",
-              borderRadius: "8px",
-              cursor: "pointer",
-              background: "#6C63FF",
-              color: "#FFF",
-              fontWeight: "600"
-            }}
-          >
-            + Novo Usuário
-          </button>
-        </Link>
-
-      </div>
-
-      {error && (
-        <p style={{ color: "red", marginBottom: "10px" }}>
-          {error}
-        </p>
-      )}
-
-      <DataTable
-        columns={[
-          "Nome",
-          "Email",
-          "Perfil",
-          "Telefone",
-          "Status"
-        ]}
-        data={users}
-        onView={handleView}
-        onEdit={handleEdit}
-        onDelete={handleDelete}
-      />
-
-    </div>
-  );
 };
 
-export default ListUsers;
+const handleSubmit = (e) => {
+
+
+e.preventDefault();
+
+if (form.senha !== form.confirmarSenha) {
+
+  alert("As senhas não coincidem.");
+
+  return;
+
+}
+
+console.log("Cadastrar Usuário");
+
+console.log(form);
+
+
+};
+
+return (
+
+
+<div>
+
+  <h1>Cadastrar Usuário</h1>
+
+  <p>
+    Cadastre novos usuários para acessar a plataforma.
+  </p>
+
+  <form onSubmit={handleSubmit}>
+
+    <Input
+      label="Nome Completo"
+      name="nome"
+      value={form.nome}
+      onChange={handleChange}
+    />
+
+    <Input
+      label="E-mail"
+      type="email"
+      name="email"
+      value={form.email}
+      onChange={handleChange}
+    />
+
+    <Input
+      label="Telefone"
+      name="telefone"
+      value={form.telefone}
+      onChange={handleChange}
+    />
+
+    <Input
+      label="Senha"
+      type="password"
+      name="senha"
+      value={form.senha}
+      onChange={handleChange}
+    />
+
+    <Input
+      label="Confirmar Senha"
+      type="password"
+      name="confirmarSenha"
+      value={form.confirmarSenha}
+      onChange={handleChange}
+    />
+
+    <Select
+      label="Perfil"
+      name="perfil"
+      value={form.perfil}
+      onChange={handleChange}
+      options={[
+        {
+          value: "ADMIN",
+          label: "Administrador"
+        },
+        {
+          value: "GESTOR_ONG",
+          label: "Gestor de ONG"
+        },
+        {
+          value: "VOLUNTARIO",
+          label: "Voluntário"
+        },
+        {
+          value: "DOADOR",
+          label: "Doador"
+        }
+      ]}
+    />
+
+    <Select
+      label="Status"
+      name="status"
+      value={form.status}
+      onChange={handleChange}
+      options={[
+        {
+          value: "ATIVO",
+          label: "Ativo"
+        },
+        {
+          value: "INATIVO",
+          label: "Inativo"
+        }
+      ]}
+    />
+
+    <FormButtons
+      submitText="Cadastrar Usuário"
+    />
+
+  </form>
+
+</div>
+
+
+);
+
+};
+
+export default CreateUser;
