@@ -5,33 +5,42 @@ import roleMiddleware from "../middlewares/roleMiddleware.js";
 
 const router = express.Router();
 
-// meu próprio perfil (USAR FUNÇÃO EXISTENTE OU CRIAR NOVA)
+// meu próprio perfil (corrigido)
 router.get(
   "/me",
   authMiddleware,
-  userController.getUserById
+  userController.getById
 );
 
-// atualizar próprio perfil (usar updateUser adaptado depois)
+// atualizar próprio perfil
 router.put(
-  "/me",
+  "/:id",
   authMiddleware,
-  userController.updateUser
+  userController.update
 );
 
-// admin
+// listar usuários (admin)
 router.get(
   "/",
   authMiddleware,
   roleMiddleware("admin"),
-  userController.getAllUsers
+  userController.getAll
 );
 
+// deletar usuário (admin)
 router.delete(
   "/:id",
   authMiddleware,
   roleMiddleware("admin"),
-  userController.deleteUser
+  userController.delete
+);
+
+// alterar status (admin)
+router.patch(
+  "/:id/status",
+  authMiddleware,
+  roleMiddleware("admin"),
+  userController.toggleStatus
 );
 
 export default router;

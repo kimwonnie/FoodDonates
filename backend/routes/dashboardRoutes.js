@@ -1,18 +1,103 @@
-import express from "express";
-import dashboardController from "../controllers/dashboardController.js";
-import authMiddleware from "../middlewares/authMiddleware.js";
-import roleMiddleware from "../middlewares/roleMiddleware.js";
+import User from "../models/User.js";
+import Donation from "../models/Donation.js";
+import Delivery from "../models/Delivery.js";
 
-const router = express.Router();
+class DashboardController {
 
-router.get("/metrics", authMiddleware, roleMiddleware("admin"), dashboardController.getDashboardMetrics);
+  async getDashboardMetrics(req, res) {
+    try {
+      const totalUsers = await User.countDocuments();
+      const totalDonations = await Donation.countDocuments();
+      const availableDonations = await Donation.countDocuments({ status: "available" });
+      const deliveredDonations = await Donation.countDocuments({ status: "delivered" });
 
-router.get("/donations-chart", authMiddleware, roleMiddleware("admin"), dashboardController.getDonationStatusChart);
+      const totalDeliveries = await Delivery.countDocuments();
+      const completedDeliveries = await Delivery.countDocuments({ status: "completed" });
+      const pendingDeliveries = await Delivery.countDocuments({ status: "pending" });
 
-router.get("/deliveries-chart", authMiddleware, roleMiddleware("admin"), dashboardController.getDeliveryStatusChart);
+      res.status(200).json({
+        users: { total: totalUsers },
+        donations: {
+          total: totalDonations,
+          available: availableDonations,
+          delivered: deliveredDonations
+        },
+        deliveries: {
+          total: totalDeliveries,
+          completed: completedDeliveries,
+          pending: pendingDeliveries
+        }
+      });
+    } catch (error) {
+      res.status(500).json({
+        message: "Erro ao carregar dashboard",
+        error: error.message
+      });
+    }
+  }
 
-router.get("/users-growth", authMiddleware, roleMiddleware("admin"), dashboardController.getUserGrowthChart);
+  async getDonationStatusChart(req, res) {
+    try {
+      const available = await Donation.countDocuments({ status: "available" });
+      const reserved = await Donation.countDocuments({ status: "reserved" });
+      const delivered = await Donation.countDocuments({ status: "delivered" });
 
-router.get("/summary", authMiddleware, roleMiddleware("admin"), dashboardController.getQuickSummary);
+      res.json({
+        labels: ["Disponíveis", "Reservadas", "Entregues"],
+        data: [available, reserved, delivered]
+      });
+    } catch (error) {
+      res.status(500).json({ message: error.message });
+    }
+  }
 
-export default router;
+  async getDeliveryStatusChart(req, res) {
+    try {
+      const pending = await Delivery.countDocuments({ status: "pending" });
+      const completed = await Delivery.countDocuments({ status: "completed" });
+      const cancelled = await Delivery.countDocuments({ status: "cancelled" });
+
+      res.json({
+        labels: ["Pendentes", "Concluídas", "Canceladas"],
+        data: [pending, completed, cancelled]
+      });
+    } catch (error) {
+      res.status(500).json({ message: error.message });
+    }
+  }
+
+  async getUserGrowthChart(req, res) {
+    try {
+      const users = await User.find({}, { createdAt: 1 });
+
+      const grouped = {};
+
+      users.forEach((u) => {
+        const d = new Date(u.createdAt);
+        const key = `${d.getMonth() + 1}/${d.getFullYear()}`;
+        grouped[key] = (grouped[key] || 0) + 1;
+      });
+
+      res.json({
+        labels: Object.keys(grouped),
+        data: Object.values(grouped)
+      });
+    } catch (error) {
+      res.status(500).json({ message: error.message });
+    }
+  }
+
+  async getQuickSummary(req, res) {
+    try {
+      res.json({
+        activeDonations: await Donation.countDocuments({ status: "available" }),
+        activeDeliveries: await Delivery.countDocuments({ status: "pending" }),
+        totalCompleted: await Delivery.countDocuments({ status: "completed" })
+      });
+    } catch (error) {
+      res.status(500).json({ message: error.message });
+    }
+  }
+}
+
+export default new DashboardController();
