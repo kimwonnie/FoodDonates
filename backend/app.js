@@ -21,10 +21,11 @@ const app = express();
 // Middlewares globais
 // ===============================
 app.use(cors({
-  origin: ["http://localhost:3000", "https://seu-frontend.com"], // ajuste conforme seu frontend
-  methods: ["GET", "POST", "PUT", "DELETE"],
+  origin: true,
   credentials: true,
+  methods: ["GET", "POST", "PUT", "DELETE", "PATCH"],
 }));
+
 app.use(helmet());
 app.use(morgan("dev"));
 app.use(express.json());
