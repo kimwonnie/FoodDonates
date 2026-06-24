@@ -4,9 +4,9 @@ import logService from "../services/logService.js";
 class FamilyController {
 
   // ==========================
-  // LISTAR FAMÍLIAS (PAGINAÇÃO)
+  // LISTAR FAMÍLIAS
   // ==========================
-  async getAllFamilies(req, res, next) {
+  async getAll(req, res, next) {
     try {
       const page = parseInt(req.query.page) || 1;
       const limit = parseInt(req.query.limit) || 10;
@@ -49,7 +49,7 @@ class FamilyController {
   // ==========================
   // BUSCAR POR ID
   // ==========================
-  async getFamilyById(req, res, next) {
+  async getById(req, res, next) {
     try {
       const family = await Family.findById(req.params.id);
 
@@ -71,9 +71,9 @@ class FamilyController {
   }
 
   // ==========================
-  // CRIAR FAMÍLIA
+  // CRIAR
   // ==========================
-  async createFamily(req, res, next) {
+  async create(req, res, next) {
     try {
       const {
         responsavel,
@@ -102,7 +102,7 @@ class FamilyController {
         rendaMensal,
       });
 
-      await logService.info("FamilyController", "Família cadastrada", {
+      await logService.info("FamilyController", "Família criada", {
         familyId: family._id,
       });
 
@@ -117,9 +117,9 @@ class FamilyController {
   }
 
   // ==========================
-  // ATUALIZAR FAMÍLIA
+  // ATUALIZAR
   // ==========================
-  async updateFamily(req, res, next) {
+  async update(req, res, next) {
     try {
       const family = await Family.findByIdAndUpdate(
         req.params.id,
@@ -149,9 +149,9 @@ class FamilyController {
   }
 
   // ==========================
-  // ALTERAR STATUS
+  // TOGGLE STATUS
   // ==========================
-  async toggleFamilyStatus(req, res, next) {
+  async toggleStatus(req, res, next) {
     try {
       const family = await Family.findById(req.params.id);
 
@@ -182,9 +182,9 @@ class FamilyController {
   }
 
   // ==========================
-  // DELETAR FAMÍLIA
+  // DELETAR
   // ==========================
-  async deleteFamily(req, res, next) {
+  async delete(req, res, next) {
     try {
       const family = await Family.findByIdAndDelete(req.params.id);
 

@@ -4,9 +4,9 @@ import logService from "../services/logService.js";
 class NgoController {
 
   // ==========================
-  // LISTAR ONGs (PAGINAÇÃO + BUSCA)
+  // LISTAR ONGs
   // ==========================
-  async getAllNgos(req, res, next) {
+  async getAll(req, res, next) {
     try {
       const page = parseInt(req.query.page) || 1;
       const limit = parseInt(req.query.limit) || 10;
@@ -50,7 +50,7 @@ class NgoController {
   // ==========================
   // BUSCAR POR ID
   // ==========================
-  async getNgoById(req, res, next) {
+  async getById(req, res, next) {
     try {
       const ngo = await Ngo.findById(req.params.id);
 
@@ -74,7 +74,7 @@ class NgoController {
   // ==========================
   // CRIAR ONG
   // ==========================
-  async createNgo(req, res, next) {
+  async create(req, res, next) {
     try {
       const {
         nome,
@@ -120,7 +120,7 @@ class NgoController {
   // ==========================
   // ATUALIZAR ONG
   // ==========================
-  async updateNgo(req, res, next) {
+  async update(req, res, next) {
     try {
       const ngo = await Ngo.findByIdAndUpdate(
         req.params.id,
@@ -152,7 +152,7 @@ class NgoController {
   // ==========================
   // TOGGLE STATUS
   // ==========================
-  async toggleNgoStatus(req, res, next) {
+  async toggleStatus(req, res, next) {
     try {
       const ngo = await Ngo.findById(req.params.id);
 
@@ -185,7 +185,7 @@ class NgoController {
   // ==========================
   // DELETAR ONG
   // ==========================
-  async deleteNgo(req, res, next) {
+  async delete(req, res, next) {
     try {
       const ngo = await Ngo.findByIdAndDelete(req.params.id);
 

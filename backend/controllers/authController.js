@@ -4,77 +4,189 @@ import logService from "../services/logService.js";
 import { isValidEmail, isStrongPassword } from "../utils/validators.js";
 
 class AuthController {
+
+  // ==========================
+  // LOGIN
+  // ==========================
   async login(req, res, next) {
     try {
       const { email, senha } = req.body;
 
       if (!email || !senha) {
-        return res.status(400).json({ message: "Email e senha são obrigatórios" });
+        return res.status(400).json({
+          success: false,
+          message: "Email e senha são obrigatórios"
+        });
       }
 
       const user = await User.findOne({ email });
 
       if (!user) {
-        return res.status(401).json({ message: "Email ou senha inválidos" });
+        return res.status(401).json({
+          success: false,
+          message: "Email ou senha inválidos"
+        });
       }
 
       const passwordMatch = await user.comparePassword(senha);
 
       if (!passwordMatch) {
-        return res.status(401).json({ message: "Email ou senha inválidos" });
+        return res.status(401).json({
+          success: false,
+          message: "Email ou senha inválidos"
+        });
       }
 
       const token = jwtService.generateToken({
         id: user._id,
-        role: user.role,
+        role: user.role
       });
 
-      return res.status(200).json({ token });
+      await logService.info("AuthController", "Login realizado", {
+        userId: user._id
+      });
+
+      return res.status(200).json({
+        success: true,
+        token,
+        user: {
+          id: user._id,
+          nome: user.nome,
+          email: user.email,
+          role: user.role
+        }
+      });
+
     } catch (error) {
       next(error);
     }
   }
 
+  // ==========================
+  // REGISTER
+  // ==========================
   async register(req, res, next) {
     try {
       const { nome, email, senha, role } = req.body;
 
       if (!nome || !email || !senha) {
-        return res.status(400).json({ message: "Campos obrigatórios" });
+        return res.status(400).json({
+          success: false,
+          message: "Campos obrigatórios"
+        });
       }
 
-      const user = await User.create({ nome, email, senha, role });
+      if (!isValidEmail(email)) {
+        return res.status(400).json({
+          success: false,
+          message: "Email inválido"
+        });
+      }
 
-      return res.status(201).json({ message: "Usuário criado" });
+      if (!isStrongPassword(senha)) {
+        return res.status(400).json({
+          success: false,
+          message: "Senha fraca"
+        });
+      }
+
+      const exists = await User.findOne({ email });
+
+      if (exists) {
+        return res.status(409).json({
+          success: false,
+          message: "Usuário já existe"
+        });
+      }
+
+      const user = await User.create({
+        nome,
+        email,
+        senha,
+        role
+      });
+
+      await logService.info("AuthController", "Usuário criado", {
+        userId: user._id
+      });
+
+      return res.status(201).json({
+        success: true,
+        message: "Usuário criado com sucesso"
+      });
+
     } catch (error) {
       next(error);
     }
   }
 
-  async profile(req, res) {
-    const user = await User.findById(req.user._id).select("-senha");
-    return res.json(user);
-  }
+  // ==========================
+  // PERFIL
+  // ==========================
+  async profile(req, res, next) {
+    try {
+      const user = await User.findById(req.user.id).select("-senha");
 
-  async changePassword(req, res) {
-    const { senhaAtual, novaSenha } = req.body;
+      return res.status(200).json({
+        success: true,
+        data: user
+      });
 
-    const user = await User.findById(req.user._id);
-
-    const valid = await user.comparePassword(senhaAtual);
-
-    if (!valid) {
-      return res.status(400).json({ message: "Senha incorreta" });
+    } catch (error) {
+      next(error);
     }
-
-    user.senha = novaSenha;
-    await user.save();
-
-    return res.json({ message: "Senha alterada" });
   }
 
+  // ==========================
+  // ALTERAR SENHA
+  // ==========================
+  async changePassword(req, res, next) {
+    try {
+      const { senhaAtual, novaSenha } = req.body;
+
+      const user = await User.findById(req.user.id);
+
+      const valid = await user.comparePassword(senhaAtual);
+
+      if (!valid) {
+        return res.status(400).json({
+          success: false,
+          message: "Senha atual incorreta"
+        });
+      }
+
+      if (!isStrongPassword(novaSenha)) {
+        return res.status(400).json({
+          success: false,
+          message: "Nova senha fraca"
+        });
+      }
+
+      user.senha = novaSenha;
+      await user.save();
+
+      await logService.info("AuthController", "Senha alterada", {
+        userId: user._id
+      });
+
+      return res.status(200).json({
+        success: true,
+        message: "Senha alterada com sucesso"
+      });
+
+    } catch (error) {
+      next(error);
+    }
+  }
+
+  // ==========================
+  // LOGOUT
+  // ==========================
   async logout(req, res) {
-    return res.json({ message: "Logout ok" });
+    return res.status(200).json({
+      success: true,
+      message: "Logout realizado"
+    });
   }
 }
 

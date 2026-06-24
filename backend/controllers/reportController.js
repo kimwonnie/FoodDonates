@@ -5,9 +5,9 @@ import Delivery from "../models/Delivery.js";
 class ReportController {
 
   // ===============================
-  // RELATÓRIO GERAL DO SISTEMA
+  // RELATÓRIO GERAL
   // ===============================
-  async getSystemReport(req, res) {
+  async getSystemReport(req, res, next) {
     try {
       const totalUsers = await User.countDocuments();
       const totalDonations = await Donation.countDocuments();
@@ -22,6 +22,7 @@ class ReportController {
       const cancelledDeliveries = await Delivery.countDocuments({ status: "cancelled" });
 
       return res.status(200).json({
+        success: true,
         overview: {
           users: totalUsers,
           donations: totalDonations,
@@ -40,17 +41,14 @@ class ReportController {
       });
 
     } catch (error) {
-      return res.status(500).json({
-        message: "Erro ao gerar relatório do sistema",
-        error: error.message,
-      });
+      next(error);
     }
   }
 
   // ===============================
-  // ATIVIDADES RECENTES
+  // ATIVIDADE RECENTE
   // ===============================
-  async getRecentActivityReport(req, res) {
+  async getRecentActivityReport(req, res, next) {
     try {
       const recentDonations = await Donation.find()
         .populate("donor", "name email")
@@ -65,64 +63,65 @@ class ReportController {
         .limit(10);
 
       return res.status(200).json({
+        success: true,
         recentDonations,
         recentDeliveries,
       });
 
     } catch (error) {
-      return res.status(500).json({
-        message: "Erro ao gerar relatório de atividades",
-        error: error.message,
-      });
+      next(error);
     }
   }
 
   // ===============================
-  // PERFORMANCE DO SISTEMA
+  // PERFORMANCE
   // ===============================
-  async getPerformanceReport(req, res) {
+  async getPerformanceReport(req, res, next) {
     try {
       const totalDeliveries = await Delivery.countDocuments();
       const completed = await Delivery.countDocuments({ status: "completed" });
 
-      const successRate =
+      const deliveryRate =
         totalDeliveries > 0 ? (completed / totalDeliveries) * 100 : 0;
 
       const totalDonations = await Donation.countDocuments();
-      const deliveredDonations = await Donation.countDocuments({
-        status: "delivered",
-      });
+      const delivered = await Donation.countDocuments({ status: "delivered" });
 
-      const donationSuccessRate =
-        totalDonations > 0 ? (deliveredDonations / totalDonations) * 100 : 0;
+      const donationRate =
+        totalDonations > 0 ? (delivered / totalDonations) * 100 : 0;
 
       return res.status(200).json({
+        success: true,
         deliveryPerformance: {
           total: totalDeliveries,
           completed,
-          successRate: successRate.toFixed(2),
+          successRate: deliveryRate.toFixed(2),
         },
         donationPerformance: {
           total: totalDonations,
-          delivered: deliveredDonations,
-          successRate: donationSuccessRate.toFixed(2),
+          delivered,
+          successRate: donationRate.toFixed(2),
         },
       });
 
     } catch (error) {
-      return res.status(500).json({
-        message: "Erro ao gerar relatório de performance",
-        error: error.message,
-      });
+      next(error);
     }
   }
 
   // ===============================
-  // RELATÓRIO POR PERÍODO
+  // RELATÓRIO POR DATA
   // ===============================
-  async getReportByDateRange(req, res) {
+  async getReportByDateRange(req, res, next) {
     try {
       const { startDate, endDate } = req.query;
+
+      if (!startDate || !endDate) {
+        return res.status(400).json({
+          success: false,
+          message: "startDate e endDate são obrigatórios"
+        });
+      }
 
       const donations = await Donation.find({
         createdAt: {
@@ -139,6 +138,7 @@ class ReportController {
       });
 
       return res.status(200).json({
+        success: true,
         period: { startDate, endDate },
         donations: donations.length,
         deliveries: deliveries.length,
@@ -147,32 +147,27 @@ class ReportController {
       });
 
     } catch (error) {
-      return res.status(500).json({
-        message: "Erro ao gerar relatório por período",
-        error: error.message,
-      });
+      next(error);
     }
   }
 
   // ===============================
-  // EXPORT SIMPLES
+  // EXPORT
   // ===============================
-  async exportBasicReport(req, res) {
+  async exportBasicReport(req, res, next) {
     try {
       const donations = await Donation.find().limit(100);
       const deliveries = await Delivery.find().limit(100);
 
       return res.status(200).json({
+        success: true,
+        exportedAt: new Date(),
         donations,
         deliveries,
-        exportedAt: new Date(),
       });
 
     } catch (error) {
-      return res.status(500).json({
-        message: "Erro ao exportar relatório",
-        error: error.message,
-      });
+      next(error);
     }
   }
 }

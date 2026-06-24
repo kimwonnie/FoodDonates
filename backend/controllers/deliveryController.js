@@ -6,18 +6,24 @@ class DeliveryController {
   // ===============================
   // Criar solicitação de entrega
   // ===============================
-  async createDelivery(req, res) {
+  async createDelivery(req, res, next) {
     try {
       const { donationId, receiverLocation } = req.body;
 
       const donation = await Donation.findById(donationId);
 
       if (!donation) {
-        return res.status(404).json({ message: "Doação não encontrada" });
+        return res.status(404).json({
+          success: false,
+          message: "Doação não encontrada"
+        });
       }
 
       if (donation.status !== "available") {
-        return res.status(400).json({ message: "Doação não disponível" });
+        return res.status(400).json({
+          success: false,
+          message: "Doação não disponível"
+        });
       }
 
       const delivery = await Delivery.create({
@@ -32,21 +38,20 @@ class DeliveryController {
       await donation.save();
 
       return res.status(201).json({
+        success: true,
         message: "Entrega solicitada com sucesso",
-        delivery,
+        data: delivery
       });
+
     } catch (error) {
-      return res.status(500).json({
-        message: "Erro ao criar entrega",
-        error: error.message,
-      });
+      next(error);
     }
   }
 
   // ===============================
   // Entregas do usuário
   // ===============================
-  async getUserDeliveries(req, res) {
+  async getUserDeliveries(req, res, next) {
     try {
       const deliveries = await Delivery.find({
         $or: [
@@ -59,30 +64,37 @@ class DeliveryController {
         .populate("receiver", "name email")
         .sort({ createdAt: -1 });
 
-      return res.status(200).json(deliveries);
-    } catch (error) {
-      return res.status(500).json({
-        message: "Erro ao buscar entregas",
-        error: error.message,
+      return res.status(200).json({
+        success: true,
+        data: deliveries
       });
+
+    } catch (error) {
+      next(error);
     }
   }
 
   // ===============================
   // Atualizar status (doador)
   // ===============================
-  async updateDeliveryStatus(req, res) {
+  async updateDeliveryStatus(req, res, next) {
     try {
       const { status } = req.body;
 
       const delivery = await Delivery.findById(req.params.id);
 
       if (!delivery) {
-        return res.status(404).json({ message: "Entrega não encontrada" });
+        return res.status(404).json({
+          success: false,
+          message: "Entrega não encontrada"
+        });
       }
 
       if (delivery.donor.toString() !== req.user.id) {
-        return res.status(403).json({ message: "Não autorizado" });
+        return res.status(403).json({
+          success: false,
+          message: "Não autorizado"
+        });
       }
 
       delivery.status = status;
@@ -95,30 +107,35 @@ class DeliveryController {
       }
 
       return res.status(200).json({
+        success: true,
         message: "Status da entrega atualizado",
-        delivery,
+        data: delivery
       });
+
     } catch (error) {
-      return res.status(500).json({
-        message: "Erro ao atualizar entrega",
-        error: error.message,
-      });
+      next(error);
     }
   }
 
   // ===============================
   // Cancelar entrega (receiver)
   // ===============================
-  async cancelDelivery(req, res) {
+  async cancelDelivery(req, res, next) {
     try {
       const delivery = await Delivery.findById(req.params.id);
 
       if (!delivery) {
-        return res.status(404).json({ message: "Entrega não encontrada" });
+        return res.status(404).json({
+          success: false,
+          message: "Entrega não encontrada"
+        });
       }
 
       if (delivery.receiver.toString() !== req.user.id) {
-        return res.status(403).json({ message: "Não autorizado" });
+        return res.status(403).json({
+          success: false,
+          message: "Não autorizado"
+        });
       }
 
       delivery.status = "cancelled";
@@ -129,13 +146,12 @@ class DeliveryController {
       });
 
       return res.status(200).json({
-        message: "Entrega cancelada",
+        success: true,
+        message: "Entrega cancelada"
       });
+
     } catch (error) {
-      return res.status(500).json({
-        message: "Erro ao cancelar entrega",
-        error: error.message,
-      });
+      next(error);
     }
   }
 }

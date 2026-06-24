@@ -3,8 +3,10 @@ import logService from "../services/logService.js";
 
 class CategoryController {
 
+  // ==========================
   // LISTAR
-  async getAllCategories(req, res, next) {
+  // ==========================
+  async getAll(req, res, next) {
     try {
       const categories = await Category.find().sort({ nome: 1 });
 
@@ -17,8 +19,10 @@ class CategoryController {
     }
   }
 
+  // ==========================
   // BUSCAR POR ID
-  async getCategoryById(req, res, next) {
+  // ==========================
+  async getById(req, res, next) {
     try {
       const category = await Category.findById(req.params.id);
 
@@ -38,8 +42,10 @@ class CategoryController {
     }
   }
 
+  // ==========================
   // CRIAR
-  async createCategory(req, res, next) {
+  // ==========================
+  async create(req, res, next) {
     try {
       const { nome, descricao } = req.body;
 
@@ -67,8 +73,10 @@ class CategoryController {
     }
   }
 
+  // ==========================
   // ATUALIZAR
-  async updateCategory(req, res, next) {
+  // ==========================
+  async update(req, res, next) {
     try {
       const category = await Category.findByIdAndUpdate(
         req.params.id,
@@ -96,8 +104,10 @@ class CategoryController {
     }
   }
 
+  // ==========================
   // DELETAR
-  async deleteCategory(req, res, next) {
+  // ==========================
+  async delete(req, res, next) {
     try {
       const category = await Category.findByIdAndDelete(req.params.id);
 
