@@ -1,4 +1,4 @@
-import Ngo from "../models/Ngo.js";
+import Ngo from "../models/NGO.js";
 
 import logService from "../services/logService.js";
 
