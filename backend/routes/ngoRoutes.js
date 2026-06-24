@@ -1,62 +1,41 @@
 import express from "express";
 import ngoController from "../controllers/ngoController.js";
 import authMiddleware from "../middlewares/authMiddleware.js";
-import roleMiddleware from "../middlewares/roleMiddleware.js";
-
-console.log("ngoController", ngoController);
 
 const router = express.Router();
 
-// ===============================
-// LISTAR ONGs
-// ===============================
 router.get(
   "/",
-  ngoController.getAllNgos
+  ngoController.getAll
 );
 
-// ===============================
-// BUSCAR ONG POR ID
-// ===============================
 router.get(
   "/:id",
-  ngoController.getNgoById
+  ngoController.getById
 );
 
-// ===============================
-// CRIAR ONG
-// ===============================
 router.post(
   "/",
   authMiddleware,
-  ngoController.createNgo
+  ngoController.create
 );
 
-// ===============================
-// ATUALIZAR ONG
-// ===============================
 router.put(
   "/:id",
   authMiddleware,
-  ngoController.updateNgo
+  ngoController.update
 );
 
-// ===============================
-// ALTERAR STATUS
-// ===============================
 router.patch(
   "/:id/status",
   authMiddleware,
-  ngoController.toggleNgoStatus
+  ngoController.toggleStatus
 );
 
-// ===============================
-// DELETAR ONG
-// ===============================
 router.delete(
   "/:id",
   authMiddleware,
-  ngoController.deleteNgo
+  ngoController.delete
 );
 
 export default router;

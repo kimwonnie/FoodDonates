@@ -3,16 +3,8 @@ import configController from "../controllers/configController.js";
 import authMiddleware from "../middlewares/authMiddleware.js";
 import roleMiddleware from "../middlewares/roleMiddleware.js";
 
-console.log("configController:", configController);
-console.log("getAllConfigs:", configController.getAllConfigs);
-console.log("getConfigByKey:", configController.getConfigByKey);
-console.log("createConfig:", configController.createConfig);
-
 const router = express.Router();
 
-// ==========================
-// LISTAR CONFIGS
-// ==========================
 router.get(
   "/",
   authMiddleware,
@@ -20,9 +12,6 @@ router.get(
   configController.getAll
 );
 
-// ==========================
-// BUSCAR POR CHAVE
-// ==========================
 router.get(
   "/:chave",
   authMiddleware,
@@ -30,9 +19,6 @@ router.get(
   configController.getByKey
 );
 
-// ==========================
-// CRIAR CONFIG
-// ==========================
 router.post(
   "/",
   authMiddleware,
@@ -40,9 +26,6 @@ router.post(
   configController.create
 );
 
-// ==========================
-// ATUALIZAR CONFIG
-// ==========================
 router.put(
   "/:id",
   authMiddleware,
@@ -50,9 +33,6 @@ router.put(
   configController.update
 );
 
-// ==========================
-// DELETAR CONFIG
-// ==========================
 router.delete(
   "/:id",
   authMiddleware,

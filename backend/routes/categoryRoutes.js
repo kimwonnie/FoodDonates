@@ -3,38 +3,42 @@ import categoryController from "../controllers/categoryController.js";
 import authMiddleware from "../middlewares/authMiddleware.js";
 import roleMiddleware from "../middlewares/roleMiddleware.js";
 
-console.log("categoryController", categoryController);
-
 const router = express.Router();
 
-// listar categorias
-router.get("/", categoryController.getAllCategories);
+// LISTAR
+router.get(
+  "/",
+  categoryController.getAll
+);
 
-// buscar por id
-router.get("/:id", categoryController.getCategoryById);
+// BUSCAR POR ID
+router.get(
+  "/:id",
+  categoryController.getById
+);
 
-// criar categoria (admin)
+// CRIAR
 router.post(
   "/",
   authMiddleware,
   roleMiddleware("admin"),
-  categoryController.createCategory
+  categoryController.create
 );
 
-// atualizar categoria (admin)
+// ATUALIZAR
 router.put(
   "/:id",
   authMiddleware,
   roleMiddleware("admin"),
-  categoryController.updateCategory
+  categoryController.update
 );
 
-// deletar categoria (admin)
+// DELETAR
 router.delete(
   "/:id",
   authMiddleware,
   roleMiddleware("admin"),
-  categoryController.deleteCategory
+  categoryController.delete
 );
 
 export default router;

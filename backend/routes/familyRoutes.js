@@ -1,65 +1,43 @@
 import express from "express";
 import familyController from "../controllers/familyController.js";
 import authMiddleware from "../middlewares/authMiddleware.js";
-import roleMiddleware from "../middlewares/roleMiddleware.js";
-
-console.log("familyController", familyController);
 
 const router = express.Router();
 
-// ===============================
-// LISTAR FAMÍLIAS
-// ===============================
 router.get(
   "/",
   authMiddleware,
-  roleMiddleware("admin"),
-  familyController.getAllFamilies
+  familyController.getAll
 );
 
-// ===============================
-// BUSCAR POR ID
-// ===============================
 router.get(
   "/:id",
   authMiddleware,
-  familyController.getFamilyById
+  familyController.getById
 );
 
-// ===============================
-// CRIAR FAMÍLIA
-// ===============================
 router.post(
   "/",
   authMiddleware,
-  familyController.createFamily
+  familyController.create
 );
 
-// ===============================
-// ATUALIZAR FAMÍLIA
-// ===============================
 router.put(
   "/:id",
   authMiddleware,
-  familyController.updateFamily
+  familyController.update
 );
 
-// ===============================
-// ALTERAR STATUS
-// ===============================
 router.patch(
   "/:id/status",
   authMiddleware,
-  familyController.toggleFamilyStatus
+  familyController.toggleStatus
 );
 
-// ===============================
-// DELETAR FAMÍLIA
-// ===============================
 router.delete(
   "/:id",
   authMiddleware,
-  familyController.deleteFamily
+  familyController.delete
 );
 
 export default router;

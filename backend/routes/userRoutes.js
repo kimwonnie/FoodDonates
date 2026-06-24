@@ -5,33 +5,7 @@ import roleMiddleware from "../middlewares/roleMiddleware.js";
 
 const router = express.Router();
 
-// =======================
-// MEU PERFIL
-// =======================
-router.get(
-  "/me",
-  authMiddleware,
-  (req, res, next) => {
-    req.params.id = req.user.id;
-    return userController.getById(req, res, next);
-  }
-);
-
-// =======================
-// ATUALIZAR MEU PERFIL
-// =======================
-router.put(
-  "/me",
-  authMiddleware,
-  (req, res, next) => {
-    req.params.id = req.user.id;
-    return userController.update(req, res, next);
-  }
-);
-
-// =======================
-// LISTAR USUÁRIOS (ADMIN)
-// =======================
+// LISTAR USUÁRIOS
 router.get(
   "/",
   authMiddleware,
@@ -39,19 +13,14 @@ router.get(
   userController.getAll
 );
 
-// =======================
-// BUSCAR USUÁRIO POR ID (ADMIN)
-// =======================
+// BUSCAR USUÁRIO
 router.get(
   "/:id",
   authMiddleware,
-  roleMiddleware("admin"),
   userController.getById
 );
 
-// =======================
-// CRIAR USUÁRIO (ADMIN)
-// =======================
+// CRIAR USUÁRIO
 router.post(
   "/",
   authMiddleware,
@@ -59,19 +28,14 @@ router.post(
   userController.create
 );
 
-// =======================
-// ATUALIZAR USUÁRIO (ADMIN)
-// =======================
+// ATUALIZAR USUÁRIO
 router.put(
   "/:id",
   authMiddleware,
-  roleMiddleware("admin"),
   userController.update
 );
 
-// =======================
-// ALTERAR STATUS (ADMIN)
-// =======================
+// ALTERAR STATUS
 router.patch(
   "/:id/status",
   authMiddleware,
@@ -79,9 +43,7 @@ router.patch(
   userController.toggleStatus
 );
 
-// =======================
-// DELETAR USUÁRIO (ADMIN)
-// =======================
+// DELETAR USUÁRIO
 router.delete(
   "/:id",
   authMiddleware,
