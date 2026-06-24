@@ -3,7 +3,10 @@ import configController from "../controllers/configController.js";
 import authMiddleware from "../middlewares/authMiddleware.js";
 import roleMiddleware from "../middlewares/roleMiddleware.js";
 
-console.log("configController", configController);
+console.log("configController:", configController);
+console.log("getAllConfigs:", configController.getAllConfigs);
+console.log("getConfigByKey:", configController.getConfigByKey);
+console.log("createConfig:", configController.createConfig);
 
 const router = express.Router();
 
@@ -14,17 +17,17 @@ router.get(
   "/",
   authMiddleware,
   roleMiddleware("admin"),
-  configController.getAllConfigs
+  configController.getAll
 );
 
 // ==========================
 // BUSCAR POR CHAVE
 // ==========================
 router.get(
-  "/key/:chave",
+  "/:chave",
   authMiddleware,
   roleMiddleware("admin"),
-  configController.getConfigByKey
+  configController.getByKey
 );
 
 // ==========================
@@ -34,7 +37,7 @@ router.post(
   "/",
   authMiddleware,
   roleMiddleware("admin"),
-  configController.createConfig
+  configController.create
 );
 
 // ==========================
@@ -44,7 +47,7 @@ router.put(
   "/:id",
   authMiddleware,
   roleMiddleware("admin"),
-  configController.updateConfig
+  configController.update
 );
 
 // ==========================
@@ -54,7 +57,7 @@ router.delete(
   "/:id",
   authMiddleware,
   roleMiddleware("admin"),
-  configController.deleteConfig
+  configController.delete
 );
 
 export default router;
