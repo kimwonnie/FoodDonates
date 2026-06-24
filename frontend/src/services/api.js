@@ -20,7 +20,7 @@ const request = async (endpoint, options = {}) => {
 
   if (!response.ok) {
     const error = await response.json().catch(() => null);
-    throw error || new Error("Erro na requisição");
+    throw new Error(error?.message || "Erro na requisição");
   }
 
   return response.json();
