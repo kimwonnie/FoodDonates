@@ -6,11 +6,10 @@ import roleMiddleware from "../middlewares/roleMiddleware.js";
 const router = express.Router();
 
 // meu próprio perfil (corrigido)
-router.get(
-  "/me",
-  authMiddleware,
-  userController.getById
-);
+router.get("/me", authMiddleware, (req, res, next) => {
+  req.params.id = req.user.id;
+  return userController.getById(req, res, next);
+});
 
 // atualizar próprio perfil
 router.put(
