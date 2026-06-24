@@ -1,22 +1,21 @@
-const BASE_URL = "http://localhost:3000";
+const BASE_URL = import.meta.env.VITE_API_URL;
 
 const getToken = () => localStorage.getItem("token");
 
 const request = async (endpoint, options = {}) => {
-
   const token = getToken();
 
   const headers = {
     "Content-Type": "application/json",
     ...(token && {
-      Authorization: `Bearer ${token}`
+      Authorization: `Bearer ${token}`,
     }),
-    ...options.headers
+    ...options.headers,
   };
 
   const response = await fetch(`${BASE_URL}${endpoint}`, {
     ...options,
-    headers
+    headers,
   });
 
   if (!response.ok) {
@@ -25,14 +24,15 @@ const request = async (endpoint, options = {}) => {
   }
 
   return response.json();
-
 };
 
 const api = {
   get: (url) => request(url, { method: "GET" }),
-  post: (url, data) => request(url, { method: "POST", body: JSON.stringify(data) }),
-  put: (url, data) => request(url, { method: "PUT", body: JSON.stringify(data) }),
-  delete: (url) => request(url, { method: "DELETE" })
+  post: (url, data) =>
+    request(url, { method: "POST", body: JSON.stringify(data) }),
+  put: (url, data) =>
+    request(url, { method: "PUT", body: JSON.stringify(data) }),
+  delete: (url) => request(url, { method: "DELETE" }),
 };
 
 export default api;
