@@ -1,11 +1,10 @@
-const express = require("express");
+import express from "express";
+import reportController from "../controllers/reportController.js";
+import authMiddleware from "../middlewares/authMiddleware.js";
+import roleMiddleware from "../middlewares/roleMiddleware.js";
+
 const router = express.Router();
 
-const reportController = require("../controllers/reportController");
-const authMiddleware = require("../middlewares/authMiddleware");
-const roleMiddleware = require("../middlewares/roleMiddleware");
-
-// Admin reports
 router.get("/system", authMiddleware, roleMiddleware("admin"), reportController.getSystemReport);
 
 router.get("/activity", authMiddleware, roleMiddleware("admin"), reportController.getRecentActivityReport);
@@ -16,4 +15,4 @@ router.get("/range", authMiddleware, roleMiddleware("admin"), reportController.g
 
 router.get("/export", authMiddleware, roleMiddleware("admin"), reportController.exportBasicReport);
 
-module.exports = router;
+export default router;

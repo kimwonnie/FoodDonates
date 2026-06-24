@@ -1,14 +1,13 @@
-const express = require("express");
+import express from "express";
+import familyController from "../controllers/familyController.js";
+import authMiddleware from "../middlewares/authMiddleware.js";
+
 const router = express.Router();
 
-const familyController = require("../controllers/familyController");
-const authMiddleware = require("../middlewares/authMiddleware");
-
-// Family endpoints
 router.post("/", authMiddleware, familyController.createFamily);
 router.get("/", authMiddleware, familyController.getFamilies);
 router.get("/:id", authMiddleware, familyController.getFamilyById);
 router.put("/:id", authMiddleware, familyController.updateFamily);
 router.delete("/:id", authMiddleware, familyController.deleteFamily);
 
-module.exports = router;
+export default router;

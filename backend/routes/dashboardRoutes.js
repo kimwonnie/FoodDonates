@@ -1,11 +1,10 @@
-const express = require("express");
+import express from "express";
+import dashboardController from "../controllers/dashboardController.js";
+import authMiddleware from "../middlewares/authMiddleware.js";
+import roleMiddleware from "../middlewares/roleMiddleware.js";
+
 const router = express.Router();
 
-const dashboardController = require("../controllers/dashboardController");
-const authMiddleware = require("../middlewares/authMiddleware");
-const roleMiddleware = require("../middlewares/roleMiddleware");
-
-// Admin dashboard
 router.get("/metrics", authMiddleware, roleMiddleware("admin"), dashboardController.getDashboardMetrics);
 
 router.get("/donations-chart", authMiddleware, roleMiddleware("admin"), dashboardController.getDonationStatusChart);
@@ -16,4 +15,4 @@ router.get("/users-growth", authMiddleware, roleMiddleware("admin"), dashboardCo
 
 router.get("/summary", authMiddleware, roleMiddleware("admin"), dashboardController.getQuickSummary);
 
-module.exports = router;
+export default router;

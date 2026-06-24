@@ -1,12 +1,12 @@
-const express = require("express");
+import express from "express";
+import configController from "../controllers/configController.js";
+import authMiddleware from "../middlewares/authMiddleware.js";
+import roleMiddleware from "../middlewares/roleMiddleware.js";
+
 const router = express.Router();
 
-const configController = require("../controllers/configController");
-const authMiddleware = require("../middlewares/authMiddleware");
-const roleMiddleware = require("../middlewares/roleMiddleware");
-
-// Only admin config
 router.get("/", authMiddleware, roleMiddleware("admin"), configController.getConfig);
+
 router.put("/", authMiddleware, roleMiddleware("admin"), configController.updateConfig);
 
-module.exports = router;
+export default router;
