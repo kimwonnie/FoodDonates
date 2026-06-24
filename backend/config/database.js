@@ -4,7 +4,8 @@ import env from "./env.js";
 const connectDB = async () => {
   try {
     await mongoose.connect(env.MONGO_URI, {
-      dbName: env.DB_NAME,
+      useNewUrlParser: true,
+      useUnifiedTopology: true,
     });
 
     console.log("📦 MongoDB conectado com sucesso");

@@ -20,7 +20,11 @@ const app = express();
 // ===============================
 // Middlewares globais
 // ===============================
-app.use(cors());
+app.use(cors({
+  origin: ["http://localhost:3000", "https://seu-frontend.com"], // ajuste conforme seu frontend
+  methods: ["GET", "POST", "PUT", "DELETE"],
+  credentials: true,
+}));
 app.use(helmet());
 app.use(morgan("dev"));
 app.use(express.json());
@@ -37,18 +41,18 @@ app.get("/", (req, res) => {
 });
 
 // ===============================
-// ROTAS DA API
+// ROTAS DA API (prefixadas com v1)
 // ===============================
-app.use("/api/auth", authRoutes);
-app.use("/api/users", userRoutes);
-app.use("/api/donations", donationRoutes);
-app.use("/api/deliveries", deliveryRoutes);
-app.use("/api/dashboard", dashboardRoutes);
-app.use("/api/reports", reportRoutes);
-app.use("/api/config", configRoutes);
-app.use("/api/categories", categoryRoutes);
-app.use("/api/families", familyRoutes);
-app.use("/api/ngos", ngoRoutes);
+app.use("/api/v1/auth", authRoutes);
+app.use("/api/v1/users", userRoutes);
+app.use("/api/v1/donations", donationRoutes);
+app.use("/api/v1/deliveries", deliveryRoutes);
+app.use("/api/v1/dashboard", dashboardRoutes);
+app.use("/api/v1/reports", reportRoutes);
+app.use("/api/v1/config", configRoutes);
+app.use("/api/v1/categories", categoryRoutes);
+app.use("/api/v1/families", familyRoutes);
+app.use("/api/v1/ngos", ngoRoutes);
 
 // ===============================
 // ROTA 404
@@ -57,6 +61,17 @@ app.use((req, res) => {
   res.status(404).json({
     success: false,
     message: "Rota não encontrada",
+  });
+});
+
+// ===============================
+// Middleware de erro global
+// ===============================
+app.use((err, req, res, next) => {
+  console.error("❌ Erro inesperado:", err);
+  res.status(500).json({
+    success: false,
+    message: "Erro interno no servidor",
   });
 });
 

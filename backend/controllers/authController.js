@@ -4,7 +4,6 @@ import logService from "../services/logService.js";
 import { isValidEmail, isStrongPassword } from "../utils/validators.js";
 
 class AuthController {
-
   // ==========================
   // LOGIN
   // ==========================
@@ -15,35 +14,35 @@ class AuthController {
       if (!email || !senha) {
         return res.status(400).json({
           success: false,
-          message: "Email e senha são obrigatórios"
+          message: "Email e senha são obrigatórios",
         });
       }
 
-      const user = await User.findOne({ email });
+      const emailNormalized = email.toLowerCase();
+      const user = await User.findOne({ email: emailNormalized });
 
       if (!user) {
         return res.status(401).json({
           success: false,
-          message: "Email ou senha inválidos"
+          message: "Email ou senha inválidos",
         });
       }
 
       const passwordMatch = await user.comparePassword(senha);
-
       if (!passwordMatch) {
         return res.status(401).json({
           success: false,
-          message: "Email ou senha inválidos"
+          message: "Email ou senha inválidos",
         });
       }
 
       const token = jwtService.generateToken({
         id: user._id,
-        role: user.role
+        role: user.role,
       });
 
       await logService.info("AuthController", "Login realizado", {
-        userId: user._id
+        userId: user._id,
       });
 
       return res.status(200).json({
@@ -53,11 +52,11 @@ class AuthController {
           id: user._id,
           nome: user.nome,
           email: user.email,
-          role: user.role
-        }
+          role: user.role,
+        },
       });
-
     } catch (error) {
+      await logService.error("AuthController", "Erro no login", { error });
       next(error);
     }
   }
@@ -72,50 +71,57 @@ class AuthController {
       if (!nome || !email || !senha) {
         return res.status(400).json({
           success: false,
-          message: "Campos obrigatórios"
+          message: "Campos obrigatórios",
         });
       }
 
-      if (!isValidEmail(email)) {
+      const emailNormalized = email.toLowerCase();
+
+      if (!isValidEmail(emailNormalized)) {
         return res.status(400).json({
           success: false,
-          message: "Email inválido"
+          message: "Email inválido",
         });
       }
 
       if (!isStrongPassword(senha)) {
         return res.status(400).json({
           success: false,
-          message: "Senha fraca"
+          message: "Senha fraca",
         });
       }
 
-      const exists = await User.findOne({ email });
-
+      const exists = await User.findOne({ email: emailNormalized });
       if (exists) {
         return res.status(409).json({
           success: false,
-          message: "Usuário já existe"
+          message: "Usuário já existe",
         });
       }
 
       const user = await User.create({
         nome,
-        email,
+        email: emailNormalized,
         senha,
-        role
+        role,
       });
 
       await logService.info("AuthController", "Usuário criado", {
-        userId: user._id
+        userId: user._id,
       });
 
       return res.status(201).json({
         success: true,
-        message: "Usuário criado com sucesso"
+        message: "Usuário criado com sucesso",
+        user: {
+          id: user._id,
+          nome: user.nome,
+          email: user.email,
+          role: user.role,
+        },
       });
-
     } catch (error) {
+      await logService.error("AuthController", "Erro no registro", { error });
       next(error);
     }
   }
@@ -126,13 +132,12 @@ class AuthController {
   async profile(req, res, next) {
     try {
       const user = await User.findById(req.user.id).select("-senha");
-
       return res.status(200).json({
         success: true,
-        data: user
+        data: user,
       });
-
     } catch (error) {
+      await logService.error("AuthController", "Erro ao buscar perfil", { error });
       next(error);
     }
   }
@@ -143,22 +148,20 @@ class AuthController {
   async changePassword(req, res, next) {
     try {
       const { senhaAtual, novaSenha } = req.body;
-
       const user = await User.findById(req.user.id);
 
       const valid = await user.comparePassword(senhaAtual);
-
       if (!valid) {
         return res.status(400).json({
           success: false,
-          message: "Senha atual incorreta"
+          message: "Senha atual incorreta",
         });
       }
 
       if (!isStrongPassword(novaSenha)) {
         return res.status(400).json({
           success: false,
-          message: "Nova senha fraca"
+          message: "Nova senha fraca",
         });
       }
 
@@ -166,15 +169,15 @@ class AuthController {
       await user.save();
 
       await logService.info("AuthController", "Senha alterada", {
-        userId: user._id
+        userId: user._id,
       });
 
       return res.status(200).json({
         success: true,
-        message: "Senha alterada com sucesso"
+        message: "Senha alterada com sucesso",
       });
-
     } catch (error) {
+      await logService.error("AuthController", "Erro ao alterar senha", { error });
       next(error);
     }
   }
@@ -185,7 +188,7 @@ class AuthController {
   async logout(req, res) {
     return res.status(200).json({
       success: true,
-      message: "Logout realizado"
+      message: "Logout realizado",
     });
   }
 }
