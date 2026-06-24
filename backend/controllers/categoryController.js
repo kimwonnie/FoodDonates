@@ -1,219 +1,125 @@
 import Category from "../models/Category.js";
-
 import logService from "../services/logService.js";
 
 class CategoryController {
 
-  // ==========================
-  // LISTAR CATEGORIAS
-  // ==========================
-  async getAll(req, res, next) {
-
+  // LISTAR
+  async getAllCategories(req, res, next) {
     try {
-
-      const categories =
-        await Category.find()
-          .sort({
-            nome: 1
-          });
+      const categories = await Category.find().sort({ nome: 1 });
 
       return res.status(200).json({
         success: true,
-        data: categories
+        data: categories,
       });
-
     } catch (error) {
-
       next(error);
-
     }
-
   }
 
-  // ==========================
   // BUSCAR POR ID
-  // ==========================
-  async getById(req, res, next) {
-
+  async getCategoryById(req, res, next) {
     try {
-
-      const category =
-        await Category.findById(
-          req.params.id
-        );
+      const category = await Category.findById(req.params.id);
 
       if (!category) {
-
         return res.status(404).json({
           success: false,
-          message:
-            "Categoria não encontrada"
+          message: "Categoria não encontrada",
         });
-
       }
 
       return res.status(200).json({
         success: true,
-        data: category
+        data: category,
       });
-
     } catch (error) {
-
       next(error);
-
     }
-
   }
 
-  // ==========================
-  // CRIAR CATEGORIA
-  // ==========================
-  async create(req, res, next) {
-
+  // CRIAR
+  async createCategory(req, res, next) {
     try {
+      const { nome, descricao } = req.body;
 
-      const {
-        nome,
-        descricao
-      } = req.body;
-
-      const exists =
-        await Category.findOne({
-          nome
-        });
+      const exists = await Category.findOne({ nome });
 
       if (exists) {
-
         return res.status(409).json({
           success: false,
-          message:
-            "Categoria já cadastrada"
+          message: "Categoria já cadastrada",
         });
-
       }
 
-      const category =
-        await Category.create({
-          nome,
-          descricao
-        });
+      const category = await Category.create({ nome, descricao });
 
-      await logService.info(
-        "CategoryController",
-        "Categoria criada",
-        {
-          categoryId:
-            category._id
-        }
-      );
+      await logService.info("CategoryController", "Categoria criada", {
+        categoryId: category._id,
+      });
 
       return res.status(201).json({
         success: true,
-        data: category
+        data: category,
       });
-
     } catch (error) {
-
       next(error);
-
     }
-
   }
 
-  // ==========================
-  // ATUALIZAR CATEGORIA
-  // ==========================
-  async update(req, res, next) {
-
+  // ATUALIZAR
+  async updateCategory(req, res, next) {
     try {
-
-      const category =
-        await Category.findByIdAndUpdate(
-          req.params.id,
-          req.body,
-          {
-            new: true,
-            runValidators: true
-          }
-        );
+      const category = await Category.findByIdAndUpdate(
+        req.params.id,
+        req.body,
+        { new: true, runValidators: true }
+      );
 
       if (!category) {
-
         return res.status(404).json({
           success: false,
-          message:
-            "Categoria não encontrada"
+          message: "Categoria não encontrada",
         });
-
       }
 
-      await logService.info(
-        "CategoryController",
-        "Categoria atualizada",
-        {
-          categoryId:
-            category._id
-        }
-      );
+      await logService.info("CategoryController", "Categoria atualizada", {
+        categoryId: category._id,
+      });
 
       return res.status(200).json({
         success: true,
-        data: category
+        data: category,
       });
-
     } catch (error) {
-
       next(error);
-
     }
-
   }
 
-  // ==========================
-  // EXCLUIR CATEGORIA
-  // ==========================
-  async delete(req, res, next) {
-
+  // DELETAR
+  async deleteCategory(req, res, next) {
     try {
-
-      const category =
-        await Category.findByIdAndDelete(
-          req.params.id
-        );
+      const category = await Category.findByIdAndDelete(req.params.id);
 
       if (!category) {
-
         return res.status(404).json({
           success: false,
-          message:
-            "Categoria não encontrada"
+          message: "Categoria não encontrada",
         });
-
       }
 
-      await logService.info(
-        "CategoryController",
-        "Categoria removida",
-        {
-          categoryId:
-            category._id
-        }
-      );
+      await logService.info("CategoryController", "Categoria removida", {
+        categoryId: category._id,
+      });
 
       return res.status(200).json({
         success: true,
-        message:
-          "Categoria removida com sucesso"
+        message: "Categoria removida com sucesso",
       });
-
     } catch (error) {
-
       next(error);
-
     }
-
   }
-
 }
 
 export default new CategoryController();

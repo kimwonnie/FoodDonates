@@ -1,325 +1,81 @@
 import User from "../models/User.js";
-
 import jwtService from "../services/jwtService.js";
 import logService from "../services/logService.js";
-
-import {
-  isValidEmail,
-  isStrongPassword
-} from "../utils/validators.js";
+import { isValidEmail, isStrongPassword } from "../utils/validators.js";
 
 class AuthController {
-
-  // ==========================
-  // LOGIN
-  // ==========================
   async login(req, res, next) {
-
     try {
-
-      const {
-        email,
-        senha
-      } = req.body;
+      const { email, senha } = req.body;
 
       if (!email || !senha) {
-
-        return res.status(400).json({
-          success: false,
-          message:
-            "Email e senha são obrigatórios"
-        });
-
+        return res.status(400).json({ message: "Email e senha são obrigatórios" });
       }
 
-      const user =
-        await User.findOne({
-          email
-        });
+      const user = await User.findOne({ email });
 
       if (!user) {
-
-        await logService.warning(
-          "AuthController",
-          "Tentativa de login inválida",
-          { email }
-        );
-
-        return res.status(401).json({
-          success: false,
-          message:
-            "Email ou senha inválidos"
-        });
-
+        return res.status(401).json({ message: "Email ou senha inválidos" });
       }
 
-      const passwordMatch =
-        await user.comparePassword(
-          senha
-        );
+      const passwordMatch = await user.comparePassword(senha);
 
       if (!passwordMatch) {
-
-        await logService.warning(
-          "AuthController",
-          "Senha incorreta",
-          { email }
-        );
-
-        return res.status(401).json({
-          success: false,
-          message:
-            "Email ou senha inválidos"
-        });
-
+        return res.status(401).json({ message: "Email ou senha inválidos" });
       }
 
-      const token =
-        jwtService.generateToken({
-          id: user._id,
-          role: user.role
-        });
-
-      await logService.info(
-        "AuthController",
-        "Login realizado",
-        {
-          userId: user._id
-        }
-      );
-
-      return res.status(200).json({
-        success: true,
-        token,
-        user: {
-          id: user._id,
-          nome: user.nome,
-          email: user.email,
-          role: user.role
-        }
+      const token = jwtService.generateToken({
+        id: user._id,
+        role: user.role,
       });
 
+      return res.status(200).json({ token });
     } catch (error) {
-
       next(error);
-
     }
-
   }
 
-  // ==========================
-  // REGISTER
-  // ==========================
   async register(req, res, next) {
-
     try {
+      const { nome, email, senha, role } = req.body;
 
-      const {
-        nome,
-        email,
-        senha,
-        role
-      } = req.body;
-
-      if (
-        !nome ||
-        !email ||
-        !senha
-      ) {
-
-        return res.status(400).json({
-          success: false,
-          message:
-            "Todos os campos são obrigatórios"
-        });
-
+      if (!nome || !email || !senha) {
+        return res.status(400).json({ message: "Campos obrigatórios" });
       }
 
-      if (
-        !isValidEmail(email)
-      ) {
+      const user = await User.create({ nome, email, senha, role });
 
-        return res.status(400).json({
-          success: false,
-          message:
-            "Email inválido"
-        });
-
-      }
-
-      if (
-        !isStrongPassword(
-          senha
-        )
-      ) {
-
-        return res.status(400).json({
-          success: false,
-          message:
-            "Senha muito fraca"
-        });
-
-      }
-
-      const existingUser =
-        await User.findOne({
-          email
-        });
-
-      if (existingUser) {
-
-        return res.status(409).json({
-          success: false,
-          message:
-            "Usuário já cadastrado"
-        });
-
-      }
-
-      const user =
-        await User.create({
-          nome,
-          email,
-          senha,
-          role
-        });
-
-      await logService.info(
-        "AuthController",
-        "Usuário criado",
-        {
-          userId: user._id
-        }
-      );
-
-      return res.status(201).json({
-        success: true,
-        message:
-          "Usuário criado com sucesso"
-      });
-
+      return res.status(201).json({ message: "Usuário criado" });
     } catch (error) {
-
       next(error);
-
     }
-
   }
 
-  // ==========================
-  // PERFIL
-  // ==========================
-  async profile(req, res, next) {
-
-    try {
-
-      const user =
-        await User.findById(
-          req.user._id
-        ).select("-senha");
-
-      return res.status(200).json({
-        success: true,
-        data: user
-      });
-
-    } catch (error) {
-
-      next(error);
-
-    }
-
+  async profile(req, res) {
+    const user = await User.findById(req.user._id).select("-senha");
+    return res.json(user);
   }
 
-  // ==========================
-  // ALTERAR SENHA
-  // ==========================
-  async changePassword(
-    req,
-    res,
-    next
-  ) {
+  async changePassword(req, res) {
+    const { senhaAtual, novaSenha } = req.body;
 
-    try {
+    const user = await User.findById(req.user._id);
 
-      const {
-        senhaAtual,
-        novaSenha
-      } = req.body;
+    const valid = await user.comparePassword(senhaAtual);
 
-      const user =
-        await User.findById(
-          req.user._id
-        );
-
-      const validPassword =
-        await user.comparePassword(
-          senhaAtual
-        );
-
-      if (!validPassword) {
-
-        return res.status(400).json({
-          success: false,
-          message:
-            "Senha atual incorreta"
-        });
-
-      }
-
-      if (
-        !isStrongPassword(
-          novaSenha
-        )
-      ) {
-
-        return res.status(400).json({
-          success: false,
-          message:
-            "Nova senha inválida"
-        });
-
-      }
-
-      user.senha = novaSenha;
-
-      await user.save();
-
-      await logService.info(
-        "AuthController",
-        "Senha alterada",
-        {
-          userId: user._id
-        }
-      );
-
-      return res.status(200).json({
-        success: true,
-        message:
-          "Senha alterada com sucesso"
-      });
-
-    } catch (error) {
-
-      next(error);
-
+    if (!valid) {
+      return res.status(400).json({ message: "Senha incorreta" });
     }
 
+    user.senha = novaSenha;
+    await user.save();
+
+    return res.json({ message: "Senha alterada" });
   }
 
-  // ==========================
-  // LOGOUT
-  // ==========================
   async logout(req, res) {
-
-    return res.status(200).json({
-      success: true,
-      message:
-        "Logout realizado com sucesso"
-    });
-
+    return res.json({ message: "Logout ok" });
   }
-
 }
 
 export default new AuthController();

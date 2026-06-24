@@ -1,137 +1,133 @@
-const User = require("../models/User");
-const Donation = require("../models/Donation");
-const Delivery = require("../models/Delivery");
+import User from "../models/User.js";
+import Donation from "../models/Donation.js";
+import Delivery from "../models/Delivery.js";
 
-// ===============================
-// Dashboard geral (KPIs + resumo)
-// ===============================
-exports.getDashboardMetrics = async (req, res) => {
-  try {
-    const totalUsers = await User.countDocuments();
-    const totalDonations = await Donation.countDocuments();
-    const availableDonations = await Donation.countDocuments({ status: "available" });
-    const deliveredDonations = await Donation.countDocuments({ status: "delivered" });
+class DashboardController {
 
-    const totalDeliveries = await Delivery.countDocuments();
-    const completedDeliveries = await Delivery.countDocuments({ status: "completed" });
-    const pendingDeliveries = await Delivery.countDocuments({ status: "pending" });
+  // ===============================
+  // KPIs gerais
+  // ===============================
+  async getDashboardMetrics(req, res) {
+    try {
+      const totalUsers = await User.countDocuments();
+      const totalDonations = await Donation.countDocuments();
+      const availableDonations = await Donation.countDocuments({ status: "available" });
+      const deliveredDonations = await Donation.countDocuments({ status: "delivered" });
 
-    res.status(200).json({
-      users: {
-        total: totalUsers,
-      },
-      donations: {
-        total: totalDonations,
-        available: availableDonations,
-        delivered: deliveredDonations,
-      },
-      deliveries: {
-        total: totalDeliveries,
-        completed: completedDeliveries,
-        pending: pendingDeliveries,
-      },
-    });
-  } catch (error) {
-    res.status(500).json({
-      message: "Erro ao carregar dashboard",
-      error: error.message,
-    });
+      const totalDeliveries = await Delivery.countDocuments();
+      const completedDeliveries = await Delivery.countDocuments({ status: "completed" });
+      const pendingDeliveries = await Delivery.countDocuments({ status: "pending" });
+
+      return res.status(200).json({
+        users: {
+          total: totalUsers,
+        },
+        donations: {
+          total: totalDonations,
+          available: availableDonations,
+          delivered: deliveredDonations,
+        },
+        deliveries: {
+          total: totalDeliveries,
+          completed: completedDeliveries,
+          pending: pendingDeliveries,
+        },
+      });
+    } catch (error) {
+      return res.status(500).json({
+        message: "Erro ao carregar dashboard",
+        error: error.message,
+      });
+    }
   }
-};
 
-// ===============================
-// Gráfico: status das doações
-// ===============================
-exports.getDonationStatusChart = async (req, res) => {
-  try {
-    const available = await Donation.countDocuments({ status: "available" });
-    const reserved = await Donation.countDocuments({ status: "reserved" });
-    const delivered = await Donation.countDocuments({ status: "delivered" });
+  // ===============================
+  // Gráfico: status das doações
+  // ===============================
+  async getDonationStatusChart(req, res) {
+    try {
+      const available = await Donation.countDocuments({ status: "available" });
+      const reserved = await Donation.countDocuments({ status: "reserved" });
+      const delivered = await Donation.countDocuments({ status: "delivered" });
 
-    const chartData = {
-      labels: ["Disponíveis", "Reservadas", "Entregues"],
-      data: [available, reserved, delivered],
-    };
-
-    res.status(200).json(chartData);
-  } catch (error) {
-    res.status(500).json({
-      message: "Erro ao gerar gráfico de doações",
-      error: error.message,
-    });
+      return res.status(200).json({
+        labels: ["Disponíveis", "Reservadas", "Entregues"],
+        data: [available, reserved, delivered],
+      });
+    } catch (error) {
+      return res.status(500).json({
+        message: "Erro ao gerar gráfico de doações",
+        error: error.message,
+      });
+    }
   }
-};
 
-// ===============================
-// Gráfico: entregas por status
-// ===============================
-exports.getDeliveryStatusChart = async (req, res) => {
-  try {
-    const pending = await Delivery.countDocuments({ status: "pending" });
-    const completed = await Delivery.countDocuments({ status: "completed" });
-    const cancelled = await Delivery.countDocuments({ status: "cancelled" });
+  // ===============================
+  // Gráfico: entregas
+  // ===============================
+  async getDeliveryStatusChart(req, res) {
+    try {
+      const pending = await Delivery.countDocuments({ status: "pending" });
+      const completed = await Delivery.countDocuments({ status: "completed" });
+      const cancelled = await Delivery.countDocuments({ status: "cancelled" });
 
-    const chartData = {
-      labels: ["Pendentes", "Concluídas", "Canceladas"],
-      data: [pending, completed, cancelled],
-    };
-
-    res.status(200).json(chartData);
-  } catch (error) {
-    res.status(500).json({
-      message: "Erro ao gerar gráfico de entregas",
-      error: error.message,
-    });
+      return res.status(200).json({
+        labels: ["Pendentes", "Concluídas", "Canceladas"],
+        data: [pending, completed, cancelled],
+      });
+    } catch (error) {
+      return res.status(500).json({
+        message: "Erro ao gerar gráfico de entregas",
+        error: error.message,
+      });
+    }
   }
-};
 
-// ===============================
-// Gráfico: crescimento (últimos usuários)
-// ===============================
-exports.getUserGrowthChart = async (req, res) => {
-  try {
-    const users = await User.find({}, { createdAt: 1 });
+  // ===============================
+  // Crescimento de usuários
+  // ===============================
+  async getUserGrowthChart(req, res) {
+    try {
+      const users = await User.find({}, { createdAt: 1 });
 
-    const grouped = {};
+      const grouped = {};
 
-    users.forEach((user) => {
-      const date = new Date(user.createdAt);
-      const month = `${date.getMonth() + 1}/${date.getFullYear()}`;
+      users.forEach((user) => {
+        const date = new Date(user.createdAt);
+        const month = `${date.getMonth() + 1}/${date.getFullYear()}`;
 
-      grouped[month] = (grouped[month] || 0) + 1;
-    });
+        grouped[month] = (grouped[month] || 0) + 1;
+      });
 
-    const labels = Object.keys(grouped);
-    const data = Object.values(grouped);
-
-    res.status(200).json({
-      labels,
-      data,
-    });
-  } catch (error) {
-    res.status(500).json({
-      message: "Erro ao gerar gráfico de crescimento",
-      error: error.message,
-    });
+      return res.status(200).json({
+        labels: Object.keys(grouped),
+        data: Object.values(grouped),
+      });
+    } catch (error) {
+      return res.status(500).json({
+        message: "Erro ao gerar gráfico de crescimento",
+        error: error.message,
+      });
+    }
   }
-};
 
-// ===============================
-// Resumo rápido para home dashboard
-// ===============================
-exports.getQuickSummary = async (req, res) => {
-  try {
-    const summary = {
-      activeDonations: await Donation.countDocuments({ status: "available" }),
-      activeDeliveries: await Delivery.countDocuments({ status: "pending" }),
-      totalCompleted: await Delivery.countDocuments({ status: "completed" }),
-    };
-
-    res.status(200).json(summary);
-  } catch (error) {
-    res.status(500).json({
-      message: "Erro ao gerar resumo",
-      error: error.message,
-    });
+  // ===============================
+  // Resumo rápido
+  // ===============================
+  async getQuickSummary(req, res) {
+    try {
+      return res.status(200).json({
+        activeDonations: await Donation.countDocuments({ status: "available" }),
+        activeDeliveries: await Delivery.countDocuments({ status: "pending" }),
+        totalCompleted: await Delivery.countDocuments({ status: "completed" }),
+      });
+    } catch (error) {
+      return res.status(500).json({
+        message: "Erro ao gerar resumo",
+        error: error.message,
+      });
+    }
   }
-};
+}
+
+export default new DashboardController();
