@@ -1,7 +1,7 @@
 import { createContext, useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 
-// CRIA O CONTEXTO
+// CONTEXTO
 export const AuthContext = createContext();
 
 export const AuthProvider = ({ children }) => {
@@ -20,7 +20,7 @@ export const AuthProvider = ({ children }) => {
     const role = localStorage.getItem("role");
     const name = localStorage.getItem("name");
 
-    if (token) {
+    if (token && role && name) {
       setUser({ token, role, name });
     }
 
@@ -60,23 +60,18 @@ export const AuthProvider = ({ children }) => {
 
   };
 
-  // ======================================
-  // CONTEXTO EXPORTADO
-  // ======================================
-  return (
+  // STATUS DE AUTENTICAÇÃO
+  const isAuthenticated = !!user?.token;
 
+  return (
     <AuthContext.Provider value={{
       user,
       loading,
-      isAuthenticated: !!user,
+      isAuthenticated,
       login,
       logout
     }}>
-
       {children}
-
     </AuthContext.Provider>
-
   );
-
 };

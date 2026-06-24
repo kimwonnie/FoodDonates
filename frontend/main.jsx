@@ -3,18 +3,17 @@ import ReactDOM from "react-dom/client";
 
 import App from "./App";
 
-// contexto global de autenticação
+import { BrowserRouter } from "react-router-dom";
 import { AuthProvider } from "./context/AuthContext";
 
-// estilos globais
 import "./styles/globals.css";
 
 ReactDOM.createRoot(document.getElementById("root")).render(
   <React.StrictMode>
-
-    <AuthProvider>
-      <App />
-    </AuthProvider>
-
+    <BrowserRouter>
+      <AuthProvider>
+        <App />
+      </AuthProvider>
+    </BrowserRouter>
   </React.StrictMode>
 );
