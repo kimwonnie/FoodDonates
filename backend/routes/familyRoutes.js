@@ -5,46 +5,59 @@ import roleMiddleware from "../middlewares/roleMiddleware.js";
 
 const router = express.Router();
 
-// listar famílias
+// ===============================
+// LISTAR FAMÍLIAS
+// ===============================
 router.get(
   "/",
   authMiddleware,
-  familyController.getAll
+  roleMiddleware("admin"),
+  familyController.getAllFamilies
 );
 
-// buscar por id
+// ===============================
+// BUSCAR POR ID
+// ===============================
 router.get(
   "/:id",
   authMiddleware,
-  familyController.getById
+  familyController.getFamilyById
 );
 
-// criar família
+// ===============================
+// CRIAR FAMÍLIA
+// ===============================
 router.post(
   "/",
   authMiddleware,
-  familyController.create
+  familyController.createFamily
 );
 
-// atualizar família
+// ===============================
+// ATUALIZAR FAMÍLIA
+// ===============================
 router.put(
   "/:id",
   authMiddleware,
-  familyController.update
+  familyController.updateFamily
 );
 
-// alterar status
+// ===============================
+// ALTERAR STATUS
+// ===============================
 router.patch(
   "/:id/status",
   authMiddleware,
-  familyController.toggleStatus
+  familyController.toggleFamilyStatus
 );
 
-// deletar família
+// ===============================
+// DELETAR FAMÍLIA
+// ===============================
 router.delete(
   "/:id",
   authMiddleware,
-  familyController.delete
+  familyController.deleteFamily
 );
 
 export default router;

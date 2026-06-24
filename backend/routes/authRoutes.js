@@ -3,11 +3,15 @@ import authController from "../controllers/authController.js";
 
 const router = express.Router();
 
-// Public routes
-router.post("/register", authController.register);
-router.post("/login", authController.login);
+// ==========================
+// PUBLIC ROUTES
+// ==========================
+router.post("/register", (req, res, next) =>
+  authController.register(req, res, next)
+);
 
-// Optional
-//router.post("/refresh", authController.refreshToken);
+router.post("/login", (req, res, next) =>
+  authController.login(req, res, next)
+);
 
 export default router;
