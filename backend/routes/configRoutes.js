@@ -5,16 +5,12 @@ import roleMiddleware from "../middlewares/roleMiddleware.js";
 
 const router = express.Router();
 
-// =======================
-// CONFIG (ADMIN ONLY)
-// =======================
-
 // listar configs
 router.get(
   "/",
   authMiddleware,
   roleMiddleware("admin"),
-  configController.getAll
+  configController.getAllConfigs
 );
 
 // buscar por chave
@@ -22,7 +18,7 @@ router.get(
   "/:chave",
   authMiddleware,
   roleMiddleware("admin"),
-  configController.getByKey
+  configController.getConfigByKey
 );
 
 // criar config
@@ -30,7 +26,7 @@ router.post(
   "/",
   authMiddleware,
   roleMiddleware("admin"),
-  configController.create
+  configController.createConfig
 );
 
 // atualizar config
@@ -38,7 +34,7 @@ router.put(
   "/:id",
   authMiddleware,
   roleMiddleware("admin"),
-  configController.update
+  configController.updateConfig
 );
 
 // deletar config
@@ -46,7 +42,7 @@ router.delete(
   "/:id",
   authMiddleware,
   roleMiddleware("admin"),
-  configController.delete
+  configController.deleteConfig
 );
 
 export default router;
