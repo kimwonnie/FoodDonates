@@ -2,6 +2,8 @@ import express from "express";
 import deliveryController from "../controllers/deliveryController.js";
 import authMiddleware from "../middlewares/authMiddleware.js";
 
+console.log("deliveryController", deliveryController);
+
 const router = express.Router();
 
 // ===============================

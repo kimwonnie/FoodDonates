@@ -3,6 +3,8 @@ import ngoController from "../controllers/ngoController.js";
 import authMiddleware from "../middlewares/authMiddleware.js";
 import roleMiddleware from "../middlewares/roleMiddleware.js";
 
+console.log("ngoController", ngoController);
+
 const router = express.Router();
 
 // ===============================

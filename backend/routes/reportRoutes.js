@@ -3,6 +3,8 @@ import reportController from "../controllers/reportController.js";
 import authMiddleware from "../middlewares/authMiddleware.js";
 import roleMiddleware from "../middlewares/roleMiddleware.js";
 
+console.log("reportController", reportController);
+
 const router = express.Router();
 
 router.get(

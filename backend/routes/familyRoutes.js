@@ -3,6 +3,8 @@ import familyController from "../controllers/familyController.js";
 import authMiddleware from "../middlewares/authMiddleware.js";
 import roleMiddleware from "../middlewares/roleMiddleware.js";
 
+console.log("familyController", familyController);
+
 const router = express.Router();
 
 // ===============================

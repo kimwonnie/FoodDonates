@@ -2,6 +2,8 @@ import express from "express";
 import donationController from "../controllers/donationController.js";
 import authMiddleware from "../middlewares/authMiddleware.js";
 
+console.log("donationController", donationController);
+
 const router = express.Router();
 
 // ===============================

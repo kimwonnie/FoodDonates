@@ -3,6 +3,8 @@ import configController from "../controllers/configController.js";
 import authMiddleware from "../middlewares/authMiddleware.js";
 import roleMiddleware from "../middlewares/roleMiddleware.js";
 
+console.log("configController", configController);
+
 const router = express.Router();
 
 // ==========================

@@ -3,6 +3,8 @@ import dashboardController from "../controllers/dashboardController.js";
 import authMiddleware from "../middlewares/authMiddleware.js";
 import roleMiddleware from "../middlewares/roleMiddleware.js";
 
+console.log("dashboardController", dashboardController);
+
 const router = express.Router();
 
 // ===============================

@@ -3,6 +3,8 @@ import categoryController from "../controllers/categoryController.js";
 import authMiddleware from "../middlewares/authMiddleware.js";
 import roleMiddleware from "../middlewares/roleMiddleware.js";
 
+console.log("categoryController", categoryController);
+
 const router = express.Router();
 
 // listar categorias
